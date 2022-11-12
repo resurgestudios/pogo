@@ -10,7 +10,7 @@ func is_enemy():
 func _ready():
 	dir = sign(scale.x)
 
-func _physics_process(_delta):
+func _physics_process(delta):
 	if !$RightDown.is_colliding() || $Right.is_colliding():
 		dir *= -1
 		scale.x *= -1
@@ -18,11 +18,9 @@ func _physics_process(_delta):
 	move = Vector2(50 * dir, 20)
 	
 	if latched != null:
-		# player moves with enemy (latched refers to player)
-		latched.move = move_and_slide(move, Vector2(0, -1)) / Vector2(60, 60)
-		# just send over how it is moving so the player can move with it!
+		if !(latched.get_node("LeftU").is_colliding() || latched.get_node("LeftD").is_colliding() || latched.get_node("RightU").is_colliding() || latched.get_node("RightD").is_colliding()):
+			latched.move = move_and_slide(move, Vector2(0, -1)) / Vector2(60, 60)
 	else:
-		# normal movement
 		move_and_slide(move, Vector2(0, -1))
 
 

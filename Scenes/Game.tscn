@@ -110,7 +110,7 @@ script = ExtResource( 2 )
 scale = Vector2( 2, 2 )
 frames = SubResource( 14 )
 animation = "run"
-frame = 7
+frame = 5
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
@@ -131,12 +131,12 @@ collision_mask = 2
 [node name="DownL" type="RayCast2D" parent="Player"]
 position = Vector2( -32, 31 )
 enabled = true
-collision_mask = 2
+collision_mask = 34
 
 [node name="DownR" type="RayCast2D" parent="Player"]
 position = Vector2( 32, 32 )
 enabled = true
-collision_mask = 2
+collision_mask = 34
 
 [node name="LeftU" type="RayCast2D" parent="Player"]
 position = Vector2( -32, -31 )
