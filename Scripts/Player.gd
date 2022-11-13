@@ -110,6 +110,9 @@ func power_charge():
 func trajectory():
 	if $Pogo/PogoRay.is_colliding():
 		$Trajecto.clear_points()
+		for i in $Trajecto.get_children():
+			i.queue_free()
+			
 		$Trajecto.add_point(Vector2(0, 0))
 		var curr_pos = Vector2(0, 0)
 		var curr_vel = (global_position - $Pogo/PogoRay.get_collision_point()).normalized() * Vector2(holding_l_force * 50, holding_l_force * 40) * pogo_force_multiplier
@@ -120,8 +123,17 @@ func trajectory():
 			curr_vel.y += grav * grav_dir
 			curr_vel.y *= y_air_drag
 			$Trajecto.add_point(curr_pos)
+		
+		var current_ball_pos = $Trajecto.points[0]
+		for i in $Trajecto.points:
+			if current_ball_pos.distance_to(i) > 8:
+				Global.instance_scene("res://Scenes/TrajectoBall.tscn", $Trajecto, i + $Trajecto.global_position)
+				current_ball_pos = i
+		
 	elif $Trajecto.points.size() != 0:
 		$Trajecto.clear_points()
+		for i in $Trajecto.get_children():
+			i.queue_free()
 
 func up_collision():
 	if sign(move.y) == -1:
@@ -306,6 +318,8 @@ func pogo_input():
 
 func pogol():
 	$Trajecto.clear_points()
+	for i in $Trajecto.get_children():
+		i.queue_free()
 	if $Pogo/PogoRay.is_colliding():
 		can_pogor = false
 		state = "flying"
@@ -316,7 +330,7 @@ func pogol():
 			if state_args != null:
 				state_args.latched = null
 				state_args = null
-			$Pogo/PogoRay.get_collider().queue_free()
+			$Pogo/PogoRay.get_collider().die()
 			
 			
 	
