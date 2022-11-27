@@ -91,6 +91,7 @@ tracks/1/keys = {
 }
 
 [node name="Game" type="Node2D"]
+position = Vector2( 0, 1 )
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_vertical_guides_": [ 1857.0 ]
@@ -110,7 +111,7 @@ script = ExtResource( 2 )
 scale = Vector2( 2, 2 )
 frames = SubResource( 14 )
 animation = "run"
-frame = 7
+frame = 1
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
