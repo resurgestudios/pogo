@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://icon.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/Player.gd" type="Script" id=2]
@@ -58,10 +58,6 @@ animations = [ {
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 25, 27 )
-
-[sub_resource type="Gradient" id=3]
-offsets = PoolRealArray( 0, 0.796089 )
-colors = PoolColorArray( 1, 0, 0, 0.955307, 1, 0, 0, 0 )
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 32, 32 )
@@ -132,12 +128,12 @@ collision_mask = 2
 [node name="DownL" type="RayCast2D" parent="Player"]
 position = Vector2( -32, 31 )
 enabled = true
-collision_mask = 2
+collision_mask = 34
 
 [node name="DownR" type="RayCast2D" parent="Player"]
 position = Vector2( 32, 32 )
 enabled = true
-collision_mask = 2
+collision_mask = 34
 
 [node name="LeftU" type="RayCast2D" parent="Player"]
 position = Vector2( -32, -31 )
@@ -183,8 +179,7 @@ enabled = true
 cast_to = Vector2( 64, 0 )
 collision_mask = 4
 
-[node name="Trajecto" type="Line2D" parent="Player"]
-gradient = SubResource( 3 )
+[node name="Trajecto" type="Node2D" parent="Player"]
 
 [node name="Terrain" type="Node2D" parent="."]
 __meta__ = {

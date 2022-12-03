@@ -3,6 +3,7 @@ extends Node2D
 var tcode2obj = {
 	0 : "res://Scenes/Blocks/GroundTile.tscn",
 	1 : "res://Scenes/Blocks/GroundTileUnder.tscn",
+	2 : "res://Scenes/Blocks/Platform.tscn",
 }
 var highest = 0
 var lowest = 0
@@ -21,6 +22,10 @@ func tile_setup():
 			var rects = [Rect2(0, 32, 32, 16), Rect2(32, 32, 32, 16), Rect2(64, 32, 32, 16)]
 			var inst = Global.instance_scene(tcode2obj[1], $Tiles, $TileMap.map_to_world(i) * Vector2(2, 2) +  global_position + Vector2(32, 16))
 			inst.get_node("Sprite").region_rect = rects[tile_num - 3]
+		
+		elif tile_num == 6:
+			var inst = Global.instance_scene(tcode2obj[2], $Tiles, $TileMap.map_to_world(i) * Vector2(2, 2) +  global_position + Vector2(32, 16))
+			
 		highest = max($TileMap.map_to_world(i).y * 2, highest)
 		lowest = min($TileMap.map_to_world(i).y * 2, lowest)
 		
