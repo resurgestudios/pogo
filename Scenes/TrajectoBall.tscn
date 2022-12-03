@@ -3,4 +3,5 @@
 [ext_resource path="res://Images/trajecto.png" type="Texture" id=1]
 
 [node name="TrajectoBall" type="Sprite"]
+scale = Vector2( 2, 2 )
 texture = ExtResource( 1 )

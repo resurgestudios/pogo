@@ -33,6 +33,8 @@ func reset():
 	$RightD.position = Vector2(player_size.x, player_size.y - 1)
 
 func _physics_process(delta):
+	if Input.is_action_just_pressed("esc"):
+		get_tree().paused = true
 	Global.Root.get_node("CanvasLayer/StateLabel").text = state
 	
 	pogo_input()
@@ -108,12 +110,9 @@ func power_charge():
 	$Pogo/Sprite.position.x = 32 - holding_l_force * 8
 
 func trajectory():
+	var trajecto_points = []
 	if $Pogo/PogoRay.is_colliding():
-		$Trajecto.clear_points()
-		for i in $Trajecto.get_children():
-			i.queue_free()
-			
-		$Trajecto.add_point(Vector2(0, 0))
+		#trajecto_points.append(Vector2(0, 0))
 		var curr_pos = Vector2(0, 0)
 		var curr_vel = (global_position - $Pogo/PogoRay.get_collision_point()).normalized() * Vector2(holding_l_force * 50, holding_l_force * 40) * pogo_force_multiplier
 		$Trajecto.position = curr_pos
@@ -122,16 +121,19 @@ func trajectory():
 			curr_vel.x *= x_air_drag
 			curr_vel.y += grav * grav_dir
 			curr_vel.y *= y_air_drag
-			$Trajecto.add_point(curr_pos)
+			trajecto_points.append(curr_pos)
 		
-		var current_ball_pos = $Trajecto.points[0]
-		for i in $Trajecto.points:
-			if current_ball_pos.distance_to(i) > 8:
-				Global.instance_scene("res://Scenes/TrajectoBall.tscn", $Trajecto, i + $Trajecto.global_position)
-				current_ball_pos = i
 		
-	elif $Trajecto.points.size() != 0:
-		$Trajecto.clear_points()
+		#maybe one day make balls equally spaced
+		var current_ball_pos = trajecto_points[0]
+		for i in range(0, trajecto_points.size()):
+			if i > $Trajecto.get_child_count() - 1:
+				var inst = Global.instance_scene("res://Scenes/TrajectoBall.tscn", $Trajecto, trajecto_points[i] + $Trajecto.global_position)
+			else:
+				$Trajecto.get_children()[i].global_position = trajecto_points[i] + $Trajecto.global_position
+			current_ball_pos = trajecto_points[i]
+				
+	elif $Trajecto.get_child_count() != 0:
 		for i in $Trajecto.get_children():
 			i.queue_free()
 
@@ -317,7 +319,6 @@ func pogo_input():
 	
 
 func pogol():
-	$Trajecto.clear_points()
 	for i in $Trajecto.get_children():
 		i.queue_free()
 	if $Pogo/PogoRay.is_colliding():

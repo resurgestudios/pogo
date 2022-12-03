@@ -4,8 +4,11 @@ var dir = 1
 var latched = null
 var move
 var dead_state = false
+
 var spawn_pos
 var spawn_dir
+var spawn_time = 5
+var spawn_stage = 0
 
 func is_enemy():
 	pass
@@ -48,4 +51,21 @@ func die():
 	$Outline.visible = true
 	dead_state = true
 	$CollisionShape2D.disabled = true
-	
+	$Outline/SpawnTimer.start(spawn_time - 2)
+
+
+func _on_SpawnTimer_timeout():
+	$Outline.modulate = Color8(255, 0, 0)
+	if spawn_stage in [0, 1, 2, 3, 4]:
+		$Outline.visible = !$Outline.visible
+		spawn_stage += 1
+		$Outline/SpawnTimer.start(0.5)
+		
+	elif spawn_stage == 5:
+		$Sprite.play("default")
+		$Sprite.visible = true
+		$Outline.visible = false
+		dead_state = false
+		$CollisionShape2D.disabled = false
+		spawn_stage = 0
+		$Outline.modulate = Color8(255, 255, 255)
