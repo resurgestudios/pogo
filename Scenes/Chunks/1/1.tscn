@@ -21,9 +21,6 @@ tile_data = PoolIntArray( -1507320, 0, 0, -1441784, 0, 0, -1376248, 0, 0, -13107
 
 [node name="Tiles" type="Node2D" parent="."]
 
-[node name="Enemy" parent="Tiles" instance=ExtResource( 3 )]
-position = Vector2( 254, -214 )
-
 [node name="Cannon" parent="Tiles" instance=ExtResource( 4 )]
 position = Vector2( 509, -568 )
 rotation = 0.314159
@@ -32,3 +29,6 @@ rotation = 0.314159
 position = Vector2( 218, -563 )
 rotation = 0.58294
 length = 200.0
+
+[node name="Enemy" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 321, -223 )

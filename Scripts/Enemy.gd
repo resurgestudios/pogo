@@ -22,9 +22,11 @@ func _ready():
 
 func _physics_process(delta):
 	if !dead_state:
-		if !$RightDown.is_colliding() || $Right.is_colliding():
+		if !$Rays/RightDown.is_colliding() || $Rays/Right.is_colliding():
 			dir *= -1
-			scale.x *= -1
+			$Sprite.scale.x *= -1
+			$Outline.scale.x *= -1
+			$Rays.scale.x *= -1
 		
 		move = Vector2(50 * dir, 20)
 		
@@ -46,7 +48,9 @@ func die():
 	$Sprite.visible = false
 	
 	position = spawn_pos
-	scale.x = spawn_dir * 2
+	$Sprite.scale.x = spawn_dir
+	$Outline.scale.x = spawn_dir
+	$Rays.scale.x = spawn_dir
 	dir = spawn_dir
 	$Outline.visible = true
 	dead_state = true

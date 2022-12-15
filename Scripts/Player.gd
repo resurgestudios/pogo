@@ -1,6 +1,5 @@
 extends KinematicBody2D
 
-# constants
 var move = Vector2(0, 0)
 var grav_dir = 1
 var state = "free_move" 
