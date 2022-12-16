@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Tilesets/Blocks.tres" type="TileSet" id=1]
 [ext_resource path="res://Scripts/Chunk.gd" type="Script" id=2]
-[ext_resource path="res://Scenes/Interactables/Enemy.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scenes/Interactables/Bat.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Scenes/Interactables/Cannon.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Scenes/Interactables/Fan.tscn" type="PackedScene" id=5]
 
@@ -30,5 +30,5 @@ position = Vector2( 218, -563 )
 rotation = 0.58294
 length = 200.0
 
-[node name="Enemy" parent="Tiles" instance=ExtResource( 3 )]
-position = Vector2( 321, -223 )
+[node name="Bat" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 482, -424 )

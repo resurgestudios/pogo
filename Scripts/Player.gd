@@ -300,7 +300,6 @@ func pogo_input():
 			if state_args != null:
 				state_args.latched = null
 				state_args = null
-			print("DDD")
 			state = "free_move"
 			
 	if Input.is_action_pressed("mb_right"):
