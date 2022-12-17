@@ -1,4 +1,4 @@
-extends Sprite
+extends Sprite2D
 
 var target = Vector2(0, 0)
 var fading_in = true

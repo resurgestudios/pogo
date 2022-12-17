@@ -1,4 +1,4 @@
-extends KinematicBody2D
+extends CharacterBody2D
 
 var latched = null
 var move = Vector2(0, 0)
@@ -13,47 +13,29 @@ var rng = RandomNumberGenerator.new()
 
 func is_enemy():
 	pass
+	
+func is_bat():
+	pass
 
 func _ready():
 	spawn_pos = position
-	$Sprite.play("default")
+	$Sprite2D.play("default")
 	
 
 func _physics_process(delta):
 	if !dead_state:
 		if active:
 			move += (Global.Player.global_position - global_position).normalized() * Vector2(0.4, 0.4)
-			move = move.clamped(10)
+			move = move.clamp(10)
 			move += Vector2(rng.randf_range(-0.2, 0.2), rng.randf_range(-0.2, 0.2))
 		else:
 			move *= Vector2(0.2, 0.2)
 		
-		
+		var col = move_and_collide(move)
+		if col:
+			move = move.bounce(col.normal)
 		if latched != null:
-			if !(latched.get_node("LeftU").is_colliding() || latched.get_node("LeftD").is_colliding() || latched.get_node("RightU").is_colliding() || latched.get_node("RightD").is_colliding() || latched.get_node("UpL").is_colliding() || latched.get_node("UpR").is_colliding() || latched.get_node("DownL").is_colliding() || latched.get_node("DownR").is_colliding()):
-				latched.move = move
-				var col = move_and_collide(move)
-				if col:
-					move = move.bounce(col.normal)
-			else:
-				if (latched.get_node("LeftU").is_colliding() || latched.get_node("LeftD").is_colliding()) && sign(move.x) == -1:
-					move.x *= -1
-				elif (latched.get_node("RightU").is_colliding() || latched.get_node("RightD").is_colliding()) && sign(move.x) == 1:
-					move.x *= -1
-				
-				if (latched.get_node("UpL").is_colliding() || latched.get_node("UpR").is_colliding()) && sign(move.y) == -1:
-					move.y *= -1
-				elif (latched.get_node("DownL").is_colliding() || latched.get_node("DownR").is_colliding()) && sign(move.y) == 1:
-					move.y *= -1
-				var col = move_and_collide(move)
-				if col:
-					move = move.bounce(col.normal)
-				latched.move = move
-		else:
-			var col = move_and_collide(move)
-			if col:
-				move = move.bounce(col.normal)
-
+			latched.move = move
 
 func _on_CollisionArea_body_entered(body):
 	if body == Global.Player && !dead_state:
@@ -61,9 +43,9 @@ func _on_CollisionArea_body_entered(body):
 		#body.queue_free()
 
 func die():
-	$Sprite.stop()
-	$Sprite.frame = 0
-	$Sprite.visible = false
+	$Sprite2D.stop()
+	$Sprite2D.frame = 0
+	$Sprite2D.visible = false
 	
 	position = spawn_pos
 	$Outline.visible = true
@@ -80,8 +62,8 @@ func _on_SpawnTimer_timeout():
 		$Outline/SpawnTimer.start(0.5)
 		
 	elif spawn_stage == 5:
-		$Sprite.play("default")
-		$Sprite.visible = true
+		$Sprite2D.play("default")
+		$Sprite2D.visible = true
 		$Outline.visible = false
 		dead_state = false
 		$CollisionShape2D.disabled = false
