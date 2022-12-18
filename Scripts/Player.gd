@@ -4,7 +4,6 @@ var move = Vector2(0, 0)
 var grav_dir = 1
 var state = "free_move" 
 var state_args = null
-var holding_l = false
 var holding_l_force = 0
 var player_size = Vector2(15, 12)
 var can_pogor = true
@@ -14,7 +13,7 @@ var grav = 1
 var x_air_drag = 0.98
 var y_air_drag = 0.98
 var x_ground_drag = 0.8
-var bounciness = 0.8
+var bounciness = 0.7
 var pogo_force_multiplier = 0.5
 var highest = 10000000
 
@@ -40,7 +39,7 @@ func _physics_process(delta):
 
 	pogo_input()
 	
-	if holding_l:
+	if state == "crouching":
 		power_charge()
 		trajectory()
 	
@@ -108,9 +107,17 @@ func _physics_process(delta):
 			latching()
 
 func power_charge():
-	holding_l_force = min(holding_l_force + 0.02, 1)
+	var max_force = 1.0
+	holding_l_force = min(global_position.distance_to(get_global_mouse_position()) / 100, max_force)
 	$Pogo/Sprite2D.modulate = Color(1 - holding_l_force, 1 - holding_l_force, 1 - holding_l_force)
 	$Pogo/Sprite2D.position.x = 32 - holding_l_force * 8
+	if $Sprite2D.is_playing():
+		$Sprite2D.stop()
+		
+	rotation = 0
+	$Sprite2D.animation = "crouch"
+	#print(holding_l_force, " ", )
+	$Sprite2D.frame = round(holding_l_force / (max_force / 3.0)) - 1
 
 func trajectory():
 	var trajecto_points = []
@@ -335,7 +342,6 @@ func flying():
 	
 	if abs(round(move.x)) <= 6 && abs(round(move.y)) <= 6:
 		if $DownL.is_colliding() || $DownR.is_colliding():
-			print("DOPA")
 			move = Vector2.ZERO
 			state = "free_move"
 
@@ -383,17 +389,28 @@ func pogo_input():
 			pogor()
 	
 	if Input.is_action_just_pressed("mb_left"):
-		holding_l = true
+# # code to make mouse go to player when left clicked pressed. MAYBE MAKE AS OPTION ?
+#		var s = DisplayServer.window_get_size()
+#		var gc = get_global_transform_with_canvas().origin
+#		if s.x / 512.0 >= s.y / 288.0:
+#			var new_x = s.x / 2 - (512.0 * (s.y / 288.0)) / 2 + gc.x * (s.y / 288.0)
+#			var new_y = s.y / 2 - (288.0 * (s.y / 288.0)) / 2 + gc.y * (s.y / 288.0)
+#			Input.warp_mouse(Vector2(new_x, new_y))
+#		else:
+#			var new_x = s.x / 2 - (512.0 * (s.x / 512.0)) / 2 + gc.x * (s.x / 512.0)
+#			var new_y = s.y / 2 - (288.0 * (s.x / 512.0)) / 2 + gc.y * (s.x / 512.0)
+#			Input.warp_mouse(Vector2(new_x, new_y))
+		state = "crouching"
 	
 	if Input.is_action_just_released("mb_left"):
 		pogol()
-		holding_l = false
 		holding_l_force = 0.2
 		$Pogo/Sprite2D.modulate = Color(1, 1, 1)
 		$Pogo/Sprite2D.position.x = 32 
 	
 
 func pogol():
+	$Sprite2D.play("default")
 	for i in $Trajecto.get_children():
 		i.queue_free()
 	if $Pogo/PogoRay.is_colliding():
