@@ -1,9 +1,9 @@
 0b7126e0c6e86d3ec295a72f5aa6e0bd
-::res://::1671395745
+::res://::1671554670
 default_env.tres::Environment::-1::1671211658::0::1::::<><>::
 export_presets.cfg::TextFile::-1::1666019308::0::1::::<><>::
 icon.png::CompressedTexture2D::1934487233890604105::1666019308::1671211689::1::::<><>::
-::res://Images/::1671399100
+::res://Images/::1671558411
 crouch.png::CompressedTexture2D::1706149803629237027::1671399100::1671399102::1::::<><>::
 fan_arrow.png::CompressedTexture2D::3883136395057349511::1666344087::1671211689::1::::<><>::
 idle_animation.png::CompressedTexture2D::337879587917405536::1671398843::1671398844::1::::<><>::
@@ -14,10 +14,10 @@ spiko.png::CompressedTexture2D::6289393590329466944::1666019309::1671211689::1::
 Sprite-0005.png::CompressedTexture2D::13354052787984058::1671217888::1671217888::1::::<><>::
 tile.png::CompressedTexture2D::1914180602955893438::1666019309::1671211689::1::::<><>::
 tileset32.png::CompressedTexture2D::623486507192867027::1671214320::1671214322::1::::<><>::
-trajecto.png::CompressedTexture2D::9072843682880933514::1668890004::1671211689::1::::<><>::
+trajecto.png::CompressedTexture2D::9072843682880933514::1671558411::1671558413::1::::<><>::
 wide_block.png::CompressedTexture2D::6426616928208066981::1666024952::1671211689::1::::<><>::
-::res://Scenes/::1671398911
-Game.tscn::PackedScene::4943413553191187667::1671398911::0::1::::<><>::uid://2tcys02wtygf<>res://Scripts/Player.gd<>res://Scripts/Game.gd<>uid://e2w3esa1vk4w<>res://Scripts/Chunk.gd<>uid://dr0768tw35roh<>res://Scripts/Camera2D.gd<>uid://i5ay428udi1h<>res://Scenes/Interactables/Enemy.tscn<>uid://crye84nfwfdew<>res://Scripts/ViewportCamera.gd
+::res://Scenes/::1671558394
+Game.tscn::PackedScene::4943413553191187667::1671558394::0::1::::<><>::uid://2tcys02wtygf<>res://Scripts/Player.gd<>res://Scripts/Game.gd<>uid://e2w3esa1vk4w<>uid://ykqbj6k8d4w2<>res://Scripts/Chunk.gd<>uid://dr0768tw35roh<>res://Scripts/Camera2D.gd<>uid://i5ay428udi1h<>res://Scenes/Interactables/Enemy.tscn<>uid://crye84nfwfdew<>res://Scripts/ViewportCamera.gd
 TrajectoBall.tscn::PackedScene::-1::1671211658::0::1::::<><>::res://Images/trajecto.png
 ::res://Scenes/Blocks/::1671109122
 GroundTile.tscn::PackedScene::-1::1671211658::0::1::::<><>::res://Images/wide_block.png
@@ -35,7 +35,7 @@ Fan.tscn::PackedScene::-1::1671211658::0::1::::<><>::res://Images/player.png<>re
 FanArrow.tscn::PackedScene::-1::1671211658::0::1::::<><>::res://Images/fan_arrow.png<>res://Scripts/FanArrow.gd
 FlyingCannon.tscn::PackedScene::-1::1671211658::0::1::::<><>::res://Images/player.png<>res://Scripts/Cannon.gd
 FlyingEnemy.tscn::PackedScene::-1::1671211658::0::1::::<><>::res://Images/spiko.png<>res://Scripts/Enemy.gd<>res://Shaders/OutlineOnly.gdshader
-::res://Scripts/::1671398742
+::res://Scripts/::1671558394
 Bat.gd::GDScript::-1::1671211658::0::1::::<>CharacterBody2D<>::
 Camera2D.gd::GDScript::-1::1671301847::0::1::::<>Camera2D<>::
 Cannon.gd::GDScript::-1::1671211658::0::1::::<>Area2D<>::
@@ -45,7 +45,7 @@ Fan.gd::GDScript::-1::1671211658::0::1::::<>Area2D<>::
 FanArrow.gd::GDScript::-1::1671211658::0::1::::<>Sprite2D<>::
 Game.gd::GDScript::-1::1671217144::0::1::::<>Node2D<>::
 Global.gd::GDScript::-1::1671301767::0::1::::<>Node<>::
-Player.gd::GDScript::-1::1671398742::0::1::::<>CharacterBody2D<>::
+Player.gd::GDScript::-1::1671558394::0::1::::<>CharacterBody2D<>::
 ViewportCamera.gd::GDScript::-1::1671301919::0::1::::<>Camera2D<>::
 ::res://Shaders/::1671109122
 OutlineOnly.gdshader::Shader::-1::1668896260::0::1::::<><>::
