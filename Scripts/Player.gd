@@ -8,7 +8,7 @@ var latch_dir : String = "null"
 var state_args = null
 var holding_l_force : float = 0
 var max_force : float = 1.0
-var player_size : Vector2 = Vector2(15, 12)
+var player_size : Vector2 = Vector2(10, 12)
 var can_pogor : bool = true
 
 var speed : float = 5
@@ -24,7 +24,7 @@ func _ready():
 	Global.Player = self
 	reset()
 
-func reset():
+func reset() -> void:
 	$DownL.position = Vector2(-player_size.x + 1, player_size.y)
 	$DownR.position = Vector2(player_size.x - 1, player_size.y)
 	$UpL.position = Vector2(-player_size.x + 1, -player_size.y)
@@ -106,25 +106,25 @@ func _physics_process(delta):
 		else:
 			latching()
 
-func power_charge():
+func power_charge() -> void:
 	holding_l_force = min(global_position.distance_to(get_global_mouse_position()) / 100, max_force)
 	$Pogo/Sprite2D.modulate = Color(1 - holding_l_force, 1 - holding_l_force, 1 - holding_l_force)
 	$Pogo/Sprite2D.position.x = 32 - holding_l_force * 8
-	if $Sprite2D.is_playing():
-		$Sprite2D.stop()
-		
-	if on_floor():
-		state = "crouching"
-		$Sprite2D.rotation = 0
-		$Sprite2D.animation = "crouch"
-		#print(holding_l_force, " ", )
-		$Sprite2D.frame = round(holding_l_force / (max_force / 3.0)) - 1
 
-func trajectory():
+func trajectory() -> void:
 	var trajecto_points = []
 	var ang : float = rad_to_deg(global_position.angle_to_point(get_global_mouse_position()))
-	
-	if (latch_dir == "null" || latch_dir == "down") && ang > 0 && ang < 180 || latch_dir == "right" && ang > -90 && ang < 90 || latch_dir == "left" && (ang > -180 && ang < -90 || ang > 90 && ang < 180):
+	if (latch_dir == "null" || latch_dir == "down") && ang > 0 && ang < 180 || latch_dir == "right" && ang > -90 && ang < 90 || latch_dir == "left" && (ang > -180 && ang < -90 || ang > 90 && ang < 180)  || latch_dir == "up" && (ang > -180 && ang < 0):
+		if $Sprite2D.is_playing():
+			$Sprite2D.stop()
+		
+		if on_floor():
+			state = "crouching"
+			$Sprite2D.rotation = 0
+			$Sprite2D.animation = "crouch"
+			#print(holding_l_force, " ", )
+			$Sprite2D.frame = round(holding_l_force / (max_force / 3.0)) - 1
+		
 		#trajecto_points.append(Vector2(0, 0))
 		var curr_pos = Vector2(0, 0)
 		var curr_vel = (global_position - get_global_mouse_position()).normalized() * Vector2(holding_l_force * 50, holding_l_force * 40) * pogo_force_multiplier
@@ -142,17 +142,17 @@ func trajectory():
 		for i in range(0, trajecto_points.size()):
 			if i > $Trajecto.get_child_count() - 1:
 				var inst = Global.instance_scene("res://Scenes/TrajectoBall.tscn", $Trajecto, trajecto_points[i] + $Trajecto.global_position)
-				inst.scale = Vector2((holding_l_force / max_force) * 2, (holding_l_force / max_force) * 2)
+				#inst.scale = Vector2((holding_l_force / max_force) * 2, (holding_l_force / max_force) * 2)
 			else:
 				$Trajecto.get_children()[i].global_position = trajecto_points[i] + $Trajecto.global_position
-				$Trajecto.get_children()[i].scale = Vector2((holding_l_force / max_force) * 2, (holding_l_force / max_force) * 2)
+				#$Trajecto.get_children()[i].scale = Vector2((holding_l_force / max_force) * 2, (holding_l_force / max_force) * 2)
 			current_ball_pos = trajecto_points[i]
 				
 	elif $Trajecto.get_child_count() != 0:
 		for i in $Trajecto.get_children():
 			i.queue_free()
 			
-func bat_latching():
+func bat_latching() -> void:
 	if sign(move.y) == -1:
 		if $UpL.get_collision_point().y - $UpL.global_position.y > move.y  && $UpL.is_colliding():
 			state_args.move.y *= -1
@@ -213,7 +213,7 @@ func bat_latching():
 		else:
 			global_position.x += move.x
 
-func up_collision():
+func up_collision() -> void:
 	if sign(move.y) == -1:
 		if $UpL.get_collision_point().y - $UpL.global_position.y > move.y  && $UpL.is_colliding():
 			move.y *= -bounciness
@@ -226,7 +226,7 @@ func up_collision():
 		else:
 			global_position.y += move.y
 
-func down_collision():
+func down_collision() -> void:
 	if sign(move.y) == 1:
 		if abs($DownL.get_collision_point().y - $DownL.global_position.y) < abs(move.y) && $DownL.is_colliding():
 			global_position.y += $DownL.get_collision_point().y - $DownL.global_position.y
@@ -248,7 +248,7 @@ func down_collision():
 			
 			
 			
-func right_collision():
+func right_collision() -> void:
 	if abs($RightU.get_collision_point().x - ($RightU.global_position.x)) < move.x  && $RightU.is_colliding():
 			global_position.x += $RightU.get_collision_point().x - $RightU.global_position.x
 			obj_check("RightU")
@@ -273,7 +273,7 @@ func left_collision():
 #					$Sprite2D.play("run")
 
 
-func latching():
+func latching() -> void:
 	if sign(move.x) == 1:
 		right_collision()
 
@@ -285,7 +285,7 @@ func latching():
 	elif sign(move.y) == -1:
 		up_collision()
 	
-func free_move():
+func free_move() -> void:
 	if sign(move.x) == 1:
 		$Sprite2D.rotation = deg_to_rad(8)
 		if $Sprite2D.animation != "run":
@@ -307,7 +307,9 @@ func free_move():
 			$Sprite2D.frame = 0
 			$Sprite2D.play("default")
 
-func flying():
+func flying() -> void:
+	if $Sprite2D.animation != "spinny":
+		$Sprite2D.play("spinny")
 	move.y *= y_air_drag
 	if sign(move.y) == -1:
 		if $UpL.get_collision_point().y - $UpL.global_position.y > move.y  && $UpL.is_colliding():
@@ -329,6 +331,7 @@ func flying():
 			obj_check("RightU")
 			move.x *= -bounciness
 			pogocr("right")
+			print(2)
 		elif abs($RightD.get_collision_point().x - $RightD.global_position.x) < move.x  && $RightD.is_colliding():
 			global_position.x += $RightD.get_collision_point().x - $RightD.global_position.x
 			move.x *= -bounciness
@@ -399,17 +402,20 @@ func pogo_input() -> void:
 				state_args.latched = null
 				state_args = null
 			state = "free_move"
+			latch_dir = "null"
 	
 	if Input.is_action_pressed("mb_left"):
-		power_charge()
-		trajectory()
+		if state in ["free_move", "latching", "crouching"]:
+			power_charge()
+			trajectory()
 	
 	if Input.is_action_just_released("mb_left"):
-		state = "free_move"
+		#state = "free_move"
 		pogol()
 		holding_l_force = 0.2
 		$Pogo/Sprite2D.modulate = Color(1, 1, 1)
 		$Pogo/Sprite2D.position.x = 32 
+		latch_dir = "null"
 	
 
 func pogol() -> void:
@@ -417,12 +423,15 @@ func pogol() -> void:
 	for i in $Trajecto.get_children():
 		i.queue_free()
 	var ang : float= rad_to_deg(global_position.angle_to_point(get_global_mouse_position()))
-	if (latch_dir == "null" || latch_dir == "down") && ang > 0 && ang < 180 || latch_dir == "right" && ang > -90 && ang < 90 || latch_dir == "left" && (ang > -180 && ang < -90 || ang > 90 && ang < 180):
+	if (latch_dir == "null" || latch_dir == "down") && ang > 0 && ang < 180 || latch_dir == "right" && ang > -90 && ang < 90 || latch_dir == "left" && (ang > -180 && ang < -90 || ang > 90 && ang < 180)  || latch_dir == "up" && (ang > -180 && ang < 0):
+		print(23)
 		can_pogor = false
 		state = "flying"
 		move = (global_position - get_global_mouse_position()).normalized() * Vector2(holding_l_force * 50, holding_l_force * 40) * pogo_force_multiplier
-		#global_position += move
-		
+		global_position += move
+	else:
+		print(latch_dir, " ", ang)
+		state = "free_move"
 #		if $Pogo/PogoRay.get_collider().has_method("is_enemy"):
 #			if state_args != null:
 #				state_args.latched = null
@@ -431,7 +440,6 @@ func pogol() -> void:
 			
 
 func pogocr(type : String) -> void:
-	
 	if Input.is_action_pressed("mb_right"):
 		latch_dir = type
 		if state != "latching":

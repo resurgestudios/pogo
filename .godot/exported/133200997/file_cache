@@ -1,0 +1,16 @@
+res://Scenes/Blocks/GroundTile.tscn::3762c11b01178e5f138c389eadf1b05a::1671211658::res://.godot/exported/133200997/export-91027191f0b2eea3a99e55940bf5cd62-GroundTile.scn
+res://Scenes/Blocks/GroundTileUnder.tscn::c1e9a7cea4cabd5df3c89a6c9766c135::1671211658::res://.godot/exported/133200997/export-8a603759c2a765c6b0e65ad12cf895fb-GroundTileUnder.scn
+res://Scenes/Blocks/Platform.tscn::97054211aea78f8c9f59452efe41aa56::1671211658::res://.godot/exported/133200997/export-f689ebca9fc48c0af3279ba1008014d1-Platform.scn
+res://Scenes/Chunks/1/1.tscn::ad8d9fb3f3fa6890e04823d8e9ad9247::1671211658::res://.godot/exported/133200997/export-da880b48c6ae34a77ab58e0702e30670-1.scn
+res://Scenes/Chunks/1/2.tscn::e72927c4ec43b7a500931eeda11038c9::1671211658::res://.godot/exported/133200997/export-af4e8ec922d2cc23fbc878d8ad3298f9-2.scn
+res://Scenes/Interactables/Bat.tscn::dcb6aa367ab6a43a79797451d4381e40::1671211658::res://.godot/exported/133200997/export-313faa6d40c7c492311d233d7bd2428e-Bat.scn
+res://Scenes/Interactables/Cannon.tscn::edca5c4fb63834f309ca49d377700b99::1671211658::res://.godot/exported/133200997/export-630900ac1134bb9dbac96d2b0cbac562-Cannon.scn
+res://Scenes/Interactables/Enemy.tscn::4342a5719936f67e5d148b8d9bd37f2a::1671211658::res://.godot/exported/133200997/export-444deeda9d79a27c79691604905e8617-Enemy.scn
+res://Scenes/Interactables/Fan.tscn::b013c534b6b86e89c275fe248671ad5c::1671211658::res://.godot/exported/133200997/export-17a2a11781d4353ae4ba483f82f4519b-Fan.scn
+res://Scenes/Interactables/FanArrow.tscn::1c503cf46a112de838a9817926f6b25a::1671211658::res://.godot/exported/133200997/export-357e628566bc083d54e66587084f24ce-FanArrow.scn
+res://Scenes/Interactables/FlyingCannon.tscn::edca5c4fb63834f309ca49d377700b99::1671211658::res://.godot/exported/133200997/export-a7a59a8424904c426f1e0070c1ae0c4c-FlyingCannon.scn
+res://Scenes/Interactables/FlyingEnemy.tscn::f9aeee9724bf88287aefc9924786d50f::1671211658::res://.godot/exported/133200997/export-4506282cd8cda6a6e7ed8744250fba20-FlyingEnemy.scn
+res://Scenes/Game.tscn::f5ac41676ab2d229adc32b4fcdb60f4f::1671559354::res://.godot/exported/133200997/export-8ec1ce4394550eef6b399142f35b815f-Game.scn
+res://Scenes/TrajectoBall.tscn::8570fd8500c463ff3f35feb9debd655d::1671211658::res://.godot/exported/133200997/export-54c22c737568eba1ce83ebb86d054f2f-TrajectoBall.scn
+res://Tilesets/Blocks.tres::e04d1e2da8fd36f7a6f2f81f87745874::1671211658::res://.godot/exported/133200997/export-9985ad89540f9d412695e0b01ec361ea-Blocks.res
+res://default_env.tres::a52129f071fffbd20a6013a6c0edec1e::1671211658::res://.godot/exported/133200997/export-7cf3fd67ad9f55210191d77b582b8209-default_env.res
