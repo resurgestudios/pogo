@@ -1,2 +1,4 @@
 res://Scenes/Game.tscn
 res://Scripts/Player.gd
+res://Scenes/Interactables/Spikey.tscn
+res://Scripts/Game.gd

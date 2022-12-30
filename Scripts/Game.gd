@@ -1,9 +1,10 @@
 extends Node2D
 
-var playing = true
-var chunk_number = 1
-var next_chunk_y = 1088
-var rng = RandomNumberGenerator.new()
+var playing : bool = true
+var chunk_number : int = 1
+var next_chunk_y : float = 1088
+var rng : RandomNumberGenerator = RandomNumberGenerator.new()
+
 
 var death_range = 300 #how many pixels from highest place before death
 
@@ -39,3 +40,7 @@ func _physics_process(delta):
 #			$Terrain.get_children()[0].queue_free()
 #		chunk_number += 1
 #		inst.name = str(chunk_number)
+
+
+func _on_h_slider_value_changed(value):
+	Engine.time_scale = value

@@ -11,16 +11,17 @@ var max_force : float = 1.0
 var player_size : Vector2 = Vector2(10, 12)
 var can_pogor : bool = true
 
-var speed : float = 5
-var grav : float = 1
+var speed : float = 120
+var grav : float = 300
 var x_air_drag : float = 0.98
 var y_air_drag : float = 0.98
 var x_ground_drag : float = 0.8
-var bounciness : float = 0.7
-var pogo_force_multiplier : float = 0.5
+var pogo_force_multiplier : float = 5
 var highest : float = 10000000
+var delta : float = 0.0
 
 func _ready():
+	Engine.time_scale = 0.5
 	Global.Player = self
 	reset()
 
@@ -34,23 +35,15 @@ func reset() -> void:
 	$RightU.position = Vector2(player_size.x, -player_size.y + 1)
 	$RightD.position = Vector2(player_size.x, player_size.y - 1)
 
-func _physics_process(delta):
-	#TO BE REMOVED VV
-	if Input.is_action_just_pressed("esc"):
-		get_tree().paused = true
-	Global.Root.get_node("CanvasLayer/StateLabel").text = state
-
-	pogo_input()
-	
-	
+func calibrate_casts():
 	if sign(move.y) == 1:
-		$DownL.target_position.y = abs(move.y + 1) * grav_dir
-		$DownR.target_position.y = abs(move.y + 1) * grav_dir
+		$DownL.target_position.y = abs(move.y + 1) * grav_dir * delta
+		$DownR.target_position.y = abs(move.y + 1) * grav_dir * delta
 		$UpL.target_position.y = 0
 		$UpR.target_position.y = 0
 	elif sign(move.y) == -1:
-		$UpL.target_position.y = -abs(move.y -1) * grav_dir
-		$UpR.target_position.y = -abs(move.y - 1) * grav_dir
+		$UpL.target_position.y = -abs(move.y -1) * grav_dir * delta
+		$UpR.target_position.y = -abs(move.y - 1) * grav_dir * delta
 		$DownL.target_position.y = 0
 		$DownR.target_position.y = 0
 	else:
@@ -58,12 +51,11 @@ func _physics_process(delta):
 		$UpR.target_position.y = 0
 		$DownL.target_position.y = 0
 		$DownR.target_position.y = 0
-
-
-	$RightU.target_position.x = abs(move.x)
-	$RightD.target_position.x = abs(move.x)
-	$LeftU.target_position.x = -abs(move.x)
-	$LeftD.target_position.x = -abs(move.x)
+	
+	$RightU.target_position.x = abs(move.x) * delta
+	$RightD.target_position.x = abs(move.x) * delta
+	$LeftU.target_position.x = -abs(move.x) * delta
+	$LeftD.target_position.x = -abs(move.x) * delta
 	$DownL.force_raycast_update()
 	$DownR.force_raycast_update()
 	$RightU.force_raycast_update()
@@ -73,21 +65,35 @@ func _physics_process(delta):
 	$UpL.force_raycast_update()
 	$UpR.force_raycast_update()
 	
+
+func _physics_process(del):
+	delta = del
+	calibrate_casts()
+	#TO BE REMOVED VV
+	if Input.is_action_just_pressed("esc"):
+		get_tree().paused = true
+	Global.Root.get_node("CanvasLayer/StateLabel").text = state
+
+	pogo_input()
+	
+	
 	
 	if state == "free_move":
 		move.x = (int(Input.is_action_pressed("right")) - int(Input.is_action_pressed("left"))) * speed
 	else:
-		if on_floor():
-			move.x *= x_ground_drag
-		else:
-			move.x *= x_air_drag
+		pass
+		#DADADADDADADAD
+#		if on_floor():
+#			move.x *= x_ground_drag
+#		else:
+#			move.x *= x_air_drag
 	
 	#need this code if pogo in mid air and detach so palyer starts falling
 	if on_floor() && state == "free_move":
 		move.y = 0
 	
 	if state in ["free_move", "flying"]:
-		move.y += grav * grav_dir
+		move.y += grav * grav_dir * delta
 #		$Sprite2D.play("fall")
 		down_collision()
 
@@ -101,10 +107,7 @@ func _physics_process(delta):
 		$Pogo.look_at(get_global_mouse_position())
 	
 	if state == "latching":
-		if state_args != null && state_args.has_method("is_bat"):
-			bat_latching()
-		else:
-			latching()
+		latching()
 
 func power_charge() -> void:
 	holding_l_force = min(global_position.distance_to(get_global_mouse_position()) / 100, max_force)
@@ -114,7 +117,7 @@ func power_charge() -> void:
 func trajectory() -> void:
 	var trajecto_points = []
 	var ang : float = rad_to_deg(global_position.angle_to_point(get_global_mouse_position()))
-	if (latch_dir == "null" || latch_dir == "down") && ang > 0 && ang < 180 || latch_dir == "right" && ang > -90 && ang < 90 || latch_dir == "left" && (ang > -180 && ang < -90 || ang > 90 && ang < 180)  || latch_dir == "up" && (ang > -180 && ang < 0):
+	if (latch_dir == "null") && ang > 0 && ang < 180 || latch_dir == "right" && ang > -90 && ang < 90 || latch_dir == "left" && (ang > -180 && ang < -90 || ang > 90 && ang < 180)  || latch_dir == "up" && (ang > -180 && ang < 0):
 		if $Sprite2D.is_playing():
 			$Sprite2D.stop()
 		
@@ -151,76 +154,13 @@ func trajectory() -> void:
 	elif $Trajecto.get_child_count() != 0:
 		for i in $Trajecto.get_children():
 			i.queue_free()
-			
-func bat_latching() -> void:
-	if sign(move.y) == -1:
-		if $UpL.get_collision_point().y - $UpL.global_position.y > move.y  && $UpL.is_colliding():
-			state_args.move.y *= -1
-			state_args.global_position.y += $UpL.get_collision_point().y - $UpL.global_position.y
-			global_position.y += $UpL.get_collision_point().y - $UpL.global_position.y
-			obj_check("UpL")
-		elif $UpR.get_collision_point().y - $UpR.global_position.y > move.y  && $UpR.is_colliding():
-			state_args.move.y *= -1
-			state_args.global_position.y += $UpR.get_collision_point().y - $UpR.global_position.y
-			global_position.y += $UpR.get_collision_point().y - $UpR.global_position.y
-			obj_check("UpR")
-		else:
-			global_position.y += move.y
-			
-	elif sign(move.y) == 1:
-		if abs($DownL.get_collision_point().y - $DownL.global_position.y) < abs(move.y) && $DownL.is_colliding():
-			state_args.global_position.y += $DownL.get_collision_point().y - $DownL.global_position.y
-			global_position.y += $DownL.get_collision_point().y - $DownL.global_position.y
-			obj_check("BotB")
-			state_args.move.y *= -1
-			obj_check("DownL")
-		elif abs($DownR.get_collision_point().y - $DownR.global_position.y) < abs(move.y)  && $DownR.is_colliding():
-			state_args.global_position.y += $DownR.get_collision_point().y - $DownR.global_position.y
-			global_position.y += $DownR.get_collision_point().y - $DownR.global_position.y
-			state_args.move.y *= -1
-			obj_check("DownR")
-		else:
-		#				$Sprite2D.play("fall")
-			global_position.y += move.y
-			obj_check("DownL")
-			obj_check("DownR")
-			obj_check("BotB")
-	if sign(move.x) == 1:
-		if abs($RightU.get_collision_point().x - ($RightU.global_position.x)) < move.x  && $RightU.is_colliding():
-			state_args.global_position.x += $RightU.get_collision_point().x - $RightU.global_position.x
-			state_args.move.x *= -1
-			global_position.x += $RightU.get_collision_point().x - $RightU.global_position.x
-			obj_check("RightU")
-		elif abs($RightD.get_collision_point().x - $RightD.global_position.x) < move.x  && $RightD.is_colliding():
-			state_args.global_position.x += $RightD.get_collision_point().x - $RightD.global_position.x
-			state_args.move.x *= -1
-			global_position.x += $RightD.get_collision_point().x - $RightD.global_position.x
-			obj_check("RightD")
-		else:
-			global_position.x += move.x
-			
-	elif sign(move.x) == -1:
-		if abs($LeftU.get_collision_point().x - $LeftU.global_position.x) < abs(move.x) && $LeftU.is_colliding():
-			state_args.global_position.x += $LeftU.get_collision_point().x - $LeftU.global_position.x
-			state_args.move.x *= -1
-			global_position.x += $LeftU.get_collision_point().x - $LeftU.global_position.x
-			obj_check("LeftU")
-		elif abs($LeftD.get_collision_point().x - $LeftD.global_position.x) < abs(move.x) && $LeftD.is_colliding():
-			state_args.global_position.x += $LeftD.get_collision_point().x - $LeftD.global_position.x
-			state_args.move.x *= -1
-			global_position.x += $LeftD.get_collision_point().x - $LeftD.global_position.x
-			obj_check("LeftD")
-		else:
-			global_position.x += move.x
 
 func up_collision() -> void:
 	if sign(move.y) == -1:
 		if $UpL.get_collision_point().y - $UpL.global_position.y > move.y  && $UpL.is_colliding():
-			move.y *= -bounciness
 			global_position.y += $UpL.get_collision_point().y - $UpL.global_position.y
 			obj_check("UpL")
 		elif $UpR.get_collision_point().y - $UpR.global_position.y > move.y  && $UpR.is_colliding():
-			move.y *= -bounciness
 			global_position.y += $UpR.get_collision_point().y - $UpR.global_position.y
 			obj_check("UpR")
 		else:
@@ -228,20 +168,20 @@ func up_collision() -> void:
 
 func down_collision() -> void:
 	if sign(move.y) == 1:
-		if abs($DownL.get_collision_point().y - $DownL.global_position.y) < abs(move.y) && $DownL.is_colliding():
+		if abs($DownL.get_collision_point().y - $DownL.global_position.y) < abs(move.y * delta) && $DownL.is_colliding():
 			global_position.y += $DownL.get_collision_point().y - $DownL.global_position.y
-			move.y = 0 if state == "free_move" else move.y * -bounciness
+			move.y = 0
 			obj_check("BotB")
 			obj_check("DownL")
-			pogocr("down")
-		elif abs($DownR.get_collision_point().y - $DownR.global_position.y) < abs(move.y)  && $DownR.is_colliding():
+			state = "free_move"
+		elif abs($DownR.get_collision_point().y - $DownR.global_position.y) < abs(move.y * delta)  && $DownR.is_colliding():
 			global_position.y += $DownR.get_collision_point().y - $DownR.global_position.y
-			move.y = 0 if state == "free_move" else move.y * -bounciness
+			move.y = 0
 			obj_check("DownR")
-			pogocr("down")
+			state = "free_move"
 		else:
 		#				$Sprite2D.play("fall")
-			global_position.y += move.y
+			global_position.y += move.y * delta
 			obj_check("DownL")
 			obj_check("DownR")
 			obj_check("BotB")
@@ -249,41 +189,55 @@ func down_collision() -> void:
 			
 			
 func right_collision() -> void:
-	if abs($RightU.get_collision_point().x - ($RightU.global_position.x)) < move.x  && $RightU.is_colliding():
+	if abs($RightU.get_collision_point().x - ($RightU.global_position.x)) < move.x * delta  && $RightU.is_colliding():
 			global_position.x += $RightU.get_collision_point().x - $RightU.global_position.x
 			obj_check("RightU")
-	elif abs($RightD.get_collision_point().x - $RightD.global_position.x) < move.x  && $RightD.is_colliding():
+	elif abs($RightD.get_collision_point().x - $RightD.global_position.x) < move.x * delta  && $RightD.is_colliding():
 		global_position.x += $RightD.get_collision_point().x - $RightD.global_position.x
 		obj_check("RightD")
 	else:
-		global_position.x += move.x
+		global_position.x += move.x * delta
 #				if $Sprite2D.animation != "run":
 #					$Sprite2D.play("run")
 
 func left_collision():
-	if abs($LeftU.get_collision_point().x - $LeftU.global_position.x) < abs(move.x) && $LeftU.is_colliding():
+	if abs($LeftU.get_collision_point().x - $LeftU.global_position.x) < abs(move.x * delta) && $LeftU.is_colliding():
 		global_position.x += $LeftU.get_collision_point().x - $LeftU.global_position.x
 		obj_check("LeftU")
-	elif abs($LeftD.get_collision_point().x - $LeftD.global_position.x) < abs(move.x) && $LeftD.is_colliding():
+	elif abs($LeftD.get_collision_point().x - $LeftD.global_position.x) < abs(move.x * delta) && $LeftD.is_colliding():
 		global_position.x += $LeftD.get_collision_point().x - $LeftD.global_position.x
 		obj_check("LeftD")
 	else:
-		global_position.x += move.x
+		global_position.x += move.x * delta
 #				if $Sprite2D.animation != "run":
 #					$Sprite2D.play("run")
 
 
 func latching() -> void:
-	if sign(move.x) == 1:
-		right_collision()
-
-	elif sign(move.x) == -1:
-		left_collision()
-		
-	if sign(move.y) == 1:
-		down_collision()
-	elif sign(move.y) == -1:
-		up_collision()
+	if latch_dir in ["left", "right"]:
+		var ucast : RayCast2D = $LeftU if latch_dir == "left" else $RightU
+		var dcast : RayCast2D = $LeftD if latch_dir == "left" else $RightD
+		if Input.is_action_pressed("up"):
+			move.y = -5
+			up_collision()
+		elif Input.is_action_pressed("down"):
+			dcast.target_position = Vector2(5, 0)
+			dcast.force_raycast_update()
+			if ucast.is_colliding():
+				move.y = 5
+				down_collision()
+			else:
+				state = "free_move"
+#	if sign(move.x) == 1:
+#		right_collision()
+#
+#	elif sign(move.x) == -1:
+#		left_collision()
+#
+#	if sign(move.y) == 1:
+#		down_collision()
+#	elif sign(move.y) == -1:
+#		up_collision()
 	
 func free_move() -> void:
 	if sign(move.x) == 1:
@@ -310,55 +264,49 @@ func free_move() -> void:
 func flying() -> void:
 	if $Sprite2D.animation != "spinny":
 		$Sprite2D.play("spinny")
-	move.y *= y_air_drag
+	#DADAD
+	#move.y *= y_air_drag
 	if sign(move.y) == -1:
-		if $UpL.get_collision_point().y - $UpL.global_position.y > move.y  && $UpL.is_colliding():
-			move.y *= -bounciness
+		if $UpL.get_collision_point().y - $UpL.global_position.y > move.y * delta && $UpL.is_colliding():
 			global_position.y += $UpL.get_collision_point().y - $UpL.global_position.y
 			obj_check("UpL")
 			pogocr("up")
-		elif $UpR.get_collision_point().y - $UpR.global_position.y > move.y  && $UpR.is_colliding():
-			move.y *= -bounciness
+		elif $UpR.get_collision_point().y - $UpR.global_position.y > move.y * delta && $UpR.is_colliding():
 			global_position.y += $UpR.get_collision_point().y - $UpR.global_position.y
 			obj_check("UpR")
 			pogocr("up")
 		else:
-			global_position.y += move.y
+			global_position.y += move.y * delta
 	
 	if sign(move.x) == 1:
-		if abs($RightU.get_collision_point().x - ($RightU.global_position.x)) < move.x  && $RightU.is_colliding():
+		if abs($RightU.get_collision_point().x - ($RightU.global_position.x)) < move.x * delta && $RightU.is_colliding():
 			global_position.x += $RightU.get_collision_point().x - $RightU.global_position.x
 			obj_check("RightU")
-			move.x *= -bounciness
 			pogocr("right")
-			print(2)
-		elif abs($RightD.get_collision_point().x - $RightD.global_position.x) < move.x  && $RightD.is_colliding():
+		elif abs($RightD.get_collision_point().x - $RightD.global_position.x) < move.x * delta && $RightD.is_colliding():
 			global_position.x += $RightD.get_collision_point().x - $RightD.global_position.x
-			move.x *= -bounciness
 			obj_check("RightD")
 			pogocr("right")
 		else:
-			global_position.x += move.x
+			global_position.x += move.x * delta
 #			if $Sprite2D.animation != "fall":
 	
 	elif sign(move.x) == -1:
-		if abs($LeftU.get_collision_point().x - $LeftU.global_position.x) < abs(move.x) && $LeftU.is_colliding():
+		if abs($LeftU.get_collision_point().x - $LeftU.global_position.x) < abs(move.x * delta) && $LeftU.is_colliding():
 			global_position.x += $LeftU.get_collision_point().x - $LeftU.global_position.x
-			move.x *= -bounciness
 			obj_check("LeftU")
 			pogocr("left")
-		elif abs($LeftD.get_collision_point().x - $LeftD.global_position.x) < abs(move.x) && $LeftD.is_colliding():
+		elif abs($LeftD.get_collision_point().x - $LeftD.global_position.x) < abs(move.x * delta) && $LeftD.is_colliding():
 			global_position.x += $LeftD.get_collision_point().x - $LeftD.global_position.x
-			move.x *= -bounciness
 			obj_check("LeftD")
 			pogocr("left")
 			
 		else:
-			global_position.x += move.x
+			global_position.x += move.x * delta
 #				if $Sprite2D.animation != "fall":
 #					$Sprite2D.play("fall")
 	
-	if abs(round(move.x)) <= 2 && abs(round(move.y)) <= 2:
+	if sign(move.y) == 1:
 		if $DownL.is_colliding() || $DownR.is_colliding():
 			move = Vector2.ZERO
 			state = "free_move"
@@ -405,17 +353,32 @@ func pogo_input() -> void:
 			latch_dir = "null"
 	
 	if Input.is_action_pressed("mb_left"):
-		if state in ["free_move", "latching", "crouching"]:
+		if state == "free_move" && on_floor() || state in ["latching", "crouching"]:
 			power_charge()
 			trajectory()
 	
 	if Input.is_action_just_released("mb_left"):
-		#state = "free_move"
-		pogol()
-		holding_l_force = 0.2
-		$Pogo/Sprite2D.modulate = Color(1, 1, 1)
-		$Pogo/Sprite2D.position.x = 32 
-		latch_dir = "null"
+		if state == "free_move" && on_floor() || state in ["latching", "crouching"]:
+			#state = "free_move"
+			pogol()
+			holding_l_force = 0.2
+			$Pogo/Sprite2D.modulate = Color(1, 1, 1)
+			$Pogo/Sprite2D.position.x = 32 
+			latch_dir = "null"
+	
+	if Input.is_action_just_pressed("down"):
+		if state == "flying":
+			Global.freeze(20)
+			$DownL.target_position = Vector2(0, 5000)
+			$DownR.target_position = Vector2(0, 5000)
+			$DownL.force_raycast_update()
+			$DownR.force_raycast_update()
+			if $DownL.is_colliding():
+				global_position += $DownL.get_collision_point() - $DownL.global_position
+				state = "free_move"
+			elif $DownR.is_colliding():
+				global_position += $DownR.get_collision_point() - $DownR.global_position
+				state = "free_move"
 	
 
 func pogol() -> void:
@@ -423,14 +386,14 @@ func pogol() -> void:
 	for i in $Trajecto.get_children():
 		i.queue_free()
 	var ang : float= rad_to_deg(global_position.angle_to_point(get_global_mouse_position()))
-	if (latch_dir == "null" || latch_dir == "down") && ang > 0 && ang < 180 || latch_dir == "right" && ang > -90 && ang < 90 || latch_dir == "left" && (ang > -180 && ang < -90 || ang > 90 && ang < 180)  || latch_dir == "up" && (ang > -180 && ang < 0):
-		print(23)
+	if (latch_dir == "null") && ang > 0 && ang < 180 || latch_dir == "right" && ang > -90 && ang < 90 || latch_dir == "left" && (ang > -180 && ang < -90 || ang > 90 && ang < 180)  || latch_dir == "up" && (ang > -180 && ang < 0):
 		can_pogor = false
 		state = "flying"
 		move = (global_position - get_global_mouse_position()).normalized() * Vector2(holding_l_force * 50, holding_l_force * 40) * pogo_force_multiplier
-		global_position += move
+		calibrate_casts()
+		flying()
+		#global_position += move
 	else:
-		print(latch_dir, " ", ang)
 		state = "free_move"
 #		if $Pogo/PogoRay.get_collider().has_method("is_enemy"):
 #			if state_args != null:
@@ -440,11 +403,10 @@ func pogol() -> void:
 			
 
 func pogocr(type : String) -> void:
-	if Input.is_action_pressed("mb_right"):
-		latch_dir = type
-		if state != "latching":
-			move = Vector2.ZERO
-			state = "latching"
+	latch_dir = type
+	if state != "latching":
+		move = Vector2.ZERO
+		state = "latching"
 #			if $Pogo/PogoRay.get_collider().has_method("is_enemy"):
 #				state_args = $Pogo/PogoRay.get_collider()
 #				$Pogo/PogoRay.get_collider().latched = self

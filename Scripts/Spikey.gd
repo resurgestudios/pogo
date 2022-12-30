@@ -12,6 +12,9 @@ var spawn_stage = 0
 
 func is_enemy():
 	pass
+	
+func is_spikey():
+	pass
 
 func _ready():
 	spawn_pos = position
@@ -30,16 +33,9 @@ func _physics_process(delta):
 		
 		move = Vector2(50 * dir, 20)
 		
-		if latched != null:
-			if !(latched.get_node("LeftU").is_colliding() || latched.get_node("LeftD").is_colliding() || latched.get_node("RightU").is_colliding() || latched.get_node("RightD").is_colliding()):
-				set_velocity(move)
-				set_up_direction(Vector2(0, -1))
-				move_and_slide()
-				latched.move = velocity / Vector2(60, 60)
-		else:
-			set_velocity(move)
-			set_up_direction(Vector2(0, -1))
-			move_and_slide()
+		set_velocity(move * Global.gspeed)
+		set_up_direction(Vector2(0, -1))
+		move_and_slide()
 
 
 func _on_CollisionArea_body_entered(body):

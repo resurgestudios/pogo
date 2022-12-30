@@ -1,76 +1,9 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=15 format=3]
 
-[ext_resource path="res://Images/spiko.png" type="Texture2D" id=1]
-[ext_resource path="res://Scripts/Enemy.gd" type="Script" id=2]
-[ext_resource path="res://Shaders/OutlineOnly.gdshader" type="Shader" id=3]
-
-[sub_resource type="AtlasTexture" id=2]
-atlas = ExtResource( 1 )
-region = Rect2( 0, 0, 36, 36 )
-
-[sub_resource type="AtlasTexture" id=3]
-atlas = ExtResource( 1 )
-region = Rect2( 36, 0, 36, 36 )
-
-[sub_resource type="AtlasTexture" id=4]
-atlas = ExtResource( 1 )
-region = Rect2( 72, 0, 36, 36 )
-
-[sub_resource type="AtlasTexture" id=5]
-atlas = ExtResource( 1 )
-region = Rect2( 108, 0, 36, 36 )
-
-[sub_resource type="AtlasTexture" id=6]
-atlas = ExtResource( 1 )
-region = Rect2( 144, 0, 36, 36 )
-
-[sub_resource type="AtlasTexture" id=7]
-atlas = ExtResource( 1 )
-region = Rect2( 180, 0, 36, 36 )
-
-[sub_resource type="AtlasTexture" id=8]
-atlas = ExtResource( 1 )
-region = Rect2( 216, 0, 36, 36 )
-
-[sub_resource type="AtlasTexture" id=9]
-atlas = ExtResource( 1 )
-region = Rect2( 252, 0, 36, 36 )
-
-[sub_resource type="SpriteFrames" id=10]
-animations = [ {
-"frames": [ SubResource( 2 ), SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 8 ), SubResource( 9 ) ],
-"loop": true,
-"name": "default",
-"speed": 10.0
-} ]
-
-[sub_resource type="ShaderMaterial" id=11]
-shader = ExtResource( 3 )
-shader_param/color = Color( 1, 1, 1, 1 )
-shader_param/width = 1.0
-shader_param/pattern = 0
-shader_param/inside = false
-shader_param/add_margins = true
-
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 13, 10 )
-
-[node name="FlyingEnemy" type="CharacterBody2D"]
-scale = Vector2( 2, 2 )
-collision_layer = 12
-collision_mask = 6
-script = ExtResource( 2 )
-
-[node name="Sprite2D" type="AnimatedSprite2D" parent="."]
-self_modulate = Color( 0.227451, 0.498039, 0.717647, 1 )
-frames = SubResource( 10 )
-
-[node name="Outline" type="AnimatedSprite2D" parent="."]
-visible = false
-material = SubResource( 11 )
-frames = SubResource( 10 )
-
-[node name="SpawnTimer" type="Timer" parent="Outline"]
+[ext_resource type="Texture2D" uid="uid://cvuvnm6y1e83e" path="res://Images/spiko.png" id="1"]
+[ext_resource type="Script" path="res://Scripts/Spikey.gd" id="2"]
+[ext_resource type="Shader" path="res://Shaders/OutlineOnly.gdshader" id="3"]
+t="Outline"]
 one_shot = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
