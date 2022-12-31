@@ -1,4 +1,6 @@
 res://Scenes/Game.tscn
 res://Scripts/Player.gd
 res://Scenes/Interactables/Spikey.tscn
+res://Scripts/Global.gd
+res://Scripts/Football.gd
 res://Scripts/Game.gd

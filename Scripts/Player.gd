@@ -10,6 +10,7 @@ var holding_l_force : float = 0
 var max_force : float = 1.0
 var player_size : Vector2 = Vector2(10, 12)
 var can_pogor : bool = true
+var focus : Array[Node] = []
 
 var speed : float = 120
 var grav : float = 300
@@ -21,7 +22,7 @@ var highest : float = 10000000
 var delta : float = 0.0
 
 func _ready():
-	Engine.time_scale = 0.5
+	Engine.time_scale = 1.0
 	Global.Player = self
 	reset()
 
@@ -76,8 +77,6 @@ func _physics_process(del):
 
 	pogo_input()
 	
-	
-	
 	if state == "free_move":
 		move.x = (int(Input.is_action_pressed("right")) - int(Input.is_action_pressed("left"))) * speed
 	else:
@@ -129,27 +128,28 @@ func trajectory() -> void:
 			$Sprite2D.frame = round(holding_l_force / (max_force / 3.0)) - 1
 		
 		#trajecto_points.append(Vector2(0, 0))
-		var curr_pos = Vector2(0, 0)
-		var curr_vel = (global_position - get_global_mouse_position()).normalized() * Vector2(holding_l_force * 50, holding_l_force * 40) * pogo_force_multiplier
+		var curr_pos : Vector2 = Vector2(0, 0)
+		var curr_vel : Vector2 = (global_position - get_global_mouse_position()).normalized() * Vector2(holding_l_force * 50, holding_l_force * 40) * pogo_force_multiplier
 		$Trajecto.position = curr_pos
-		for i in range(0, 15):
-			curr_pos += curr_vel
-			curr_vel.x *= x_air_drag
-			curr_vel.y += grav * grav_dir
-			curr_vel.y *= y_air_drag
-			trajecto_points.append(curr_pos)
-		
+		var j : int = 0
+		for i in range(0, round(0.01666666666667 / delta * 80)):
+			curr_vel.y += grav * grav_dir * delta
+			curr_pos += curr_vel * delta
+			if j % (int(round(0.01666666666667 / delta)) * 5) == 0:
+				trajecto_points.append(curr_pos)
+			j += 1
 		
 		#maybe one day make balls equally spaced
-		var current_ball_pos = trajecto_points[0]
-		for i in range(0, trajecto_points.size()):
-			if i > $Trajecto.get_child_count() - 1:
-				var inst = Global.instance_scene("res://Scenes/TrajectoBall.tscn", $Trajecto, trajecto_points[i] + $Trajecto.global_position)
-				#inst.scale = Vector2((holding_l_force / max_force) * 2, (holding_l_force / max_force) * 2)
-			else:
-				$Trajecto.get_children()[i].global_position = trajecto_points[i] + $Trajecto.global_position
-				#$Trajecto.get_children()[i].scale = Vector2((holding_l_force / max_force) * 2, (holding_l_force / max_force) * 2)
-			current_ball_pos = trajecto_points[i]
+		if trajecto_points.size() > 0:
+			var current_ball_pos = trajecto_points[0]
+			for i in range(0, trajecto_points.size()):
+				if i > $Trajecto.get_child_count() - 1:
+					var inst = Global.instance_scene("res://Scenes/TrajectoBall.tscn", $Trajecto, trajecto_points[i] + $Trajecto.global_position)
+					#inst.scale = Vector2((holding_l_force / max_force) * 2, (holding_l_force / max_force) * 2)
+				else:
+					$Trajecto.get_children()[i].global_position = trajecto_points[i] + $Trajecto.global_position
+					#$Trajecto.get_children()[i].scale = Vector2((holding_l_force / max_force) * 2, (holding_l_force / max_force) * 2)
+				current_ball_pos = trajecto_points[i]
 				
 	elif $Trajecto.get_child_count() != 0:
 		for i in $Trajecto.get_children():
@@ -262,6 +262,15 @@ func free_move() -> void:
 			$Sprite2D.play("default")
 
 func flying() -> void:
+	if focus.size() > 0:
+		if Input.is_action_just_pressed("mb_left"):
+			global_position = focus[0].global_position + (focus[0].global_position - get_global_mouse_position()).normalized() * -30
+			move = (focus[0].global_position - get_global_mouse_position()).normalized() * -600.0
+			focus[0].move = (focus[0].global_position - get_global_mouse_position()).normalized() * 600.0
+			focus.remove_at(0)
+			focus_updated()
+			
+			
 	if $Sprite2D.animation != "spinny":
 		$Sprite2D.play("spinny")
 	#DADAD
@@ -368,17 +377,17 @@ func pogo_input() -> void:
 	
 	if Input.is_action_just_pressed("down"):
 		if state == "flying":
-			Global.freeze(20)
-			$DownL.target_position = Vector2(0, 5000)
-			$DownR.target_position = Vector2(0, 5000)
-			$DownL.force_raycast_update()
-			$DownR.force_raycast_update()
-			if $DownL.is_colliding():
-				global_position += $DownL.get_collision_point() - $DownL.global_position
-				state = "free_move"
-			elif $DownR.is_colliding():
-				global_position += $DownR.get_collision_point() - $DownR.global_position
-				state = "free_move"
+			Global.freeze(0.05, 0.5, func(): move = Vector2(0, 2000))
+#			$DownL.target_position = Vector2(0, 5000)
+#			$DownR.target_position = Vector2(0, 5000)
+#			$DownL.force_raycast_update()
+#			$DownR.force_raycast_update()
+#			if $DownL.is_colliding():
+#				global_position += $DownL.get_collision_point() - $DownL.global_position
+#				state = "free_move"
+#			elif $DownR.is_colliding():
+#				global_position += $DownR.get_collision_point() - $DownR.global_position
+#				state = "free_move"
 	
 
 func pogol() -> void:
@@ -423,3 +432,16 @@ func pogocr(type : String) -> void:
 #		var new_x = s.x / 2 - (512.0 * (s.x / 512.0)) / 2 + gc.x * (s.x / 512.0)
 #		var new_y = s.y / 2 - (288.0 * (s.x / 512.0)) / 2 + gc.y * (s.x / 512.0)
 #		Input.warp_mouse(Vector2(new_x, new_y))
+
+func focus_updated() -> void:
+	if focus.size() == 1:
+		if Engine.time_scale != 0.2:
+			Global.Root.get_node("CanvasModulate/AnimationPlayer").playback_speed = 5.0
+			Global.Root.get_node("CanvasModulate/AnimationPlayer").play("Fade")
+			#create_tween().set_ease(Tween.EASE_OUT).tween_property(Engine, "time_scale", 0.05 , 0.4)
+			Engine.time_scale = 0.2
+	elif focus.size() == 0:
+		Global.Root.get_node("CanvasModulate/AnimationPlayer").playback_speed = 5.0
+		Global.Root.get_node("CanvasModulate/AnimationPlayer").play_backwards("Fade")
+		#create_tween().tween_property(Engine, "time_scale", 1.0 , 0.2)
+		Engine.time_scale = 1
