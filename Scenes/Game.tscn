@@ -1,4 +1,4 @@
-[gd_scene load_steps=68 format=3 uid="uid://bkyvbivhm36us"]
+[gd_scene load_steps=63 format=3 uid="uid://bkyvbivhm36us"]
 
 [ext_resource type="Texture2D" uid="uid://2tcys02wtygf" path="res://icon.png" id="1"]
 [ext_resource type="Script" path="res://Scripts/Player.gd" id="2"]
@@ -9,13 +9,11 @@
 [ext_resource type="Texture2D" uid="uid://dr0768tw35roh" path="res://Images/run_spritesheet.png" id="5"]
 [ext_resource type="Script" path="res://Scripts/Camera2D.gd" id="5_shig4"]
 [ext_resource type="Texture2D" uid="uid://bavq5nn4g2eln" path="res://Images/fluffball.png" id="6_aeuix"]
-[ext_resource type="Texture2D" uid="uid://qw20dxbceae1" path="res://Images/light.png" id="9_0ti4h"]
 [ext_resource type="Texture2D" uid="uid://crye84nfwfdew" path="res://Images/orangeandyellow.png" id="9_lpjo3"]
 [ext_resource type="Texture2D" uid="uid://dkqohuuy6xxm3" path="res://Images/tileset16.png" id="10_gjh8e"]
 [ext_resource type="Script" path="res://Scripts/ViewportCamera.gd" id="10_kuv0c"]
 [ext_resource type="PackedScene" uid="uid://dvi0dwo5lan74" path="res://Scenes/Interactables/Spikey.tscn" id="11_h8kmr"]
-[ext_resource type="Texture2D" uid="uid://bywwkafp286d" path="res://Images/player.png" id="14_rfif8"]
-[ext_resource type="Script" path="res://Scripts/Football.gd" id="14_ves4r"]
+[ext_resource type="PackedScene" uid="uid://c2tumv5buirsj" path="res://Scenes/Interactables/Football.tscn" id="14_niw0v"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4r6up"]
 atlas = ExtResource("3_p780w")
@@ -547,62 +545,6 @@ sources/3 = SubResource("TileSetAtlasSource_fsiu3")
 [sub_resource type="ViewportTexture" id="ViewportTexture_1lw4e"]
 viewport_path = NodePath("SubViewport")
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_hpi6a"]
-radius = 50.448
-
-[sub_resource type="Animation" id="Animation_il0m8"]
-resource_name = "Fade"
-length = 0.5
-tracks/0/type = "bezier"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:color:r")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"handle_modes": PackedInt32Array(0, 0),
-"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 0.385493, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0, 0.5)
-}
-tracks/1/type = "bezier"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath(".:color:g")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"handle_modes": PackedInt32Array(0, 0),
-"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 0.385492, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0, 0.5)
-}
-tracks/2/type = "bezier"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath(".:color:b")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"handle_modes": PackedInt32Array(0, 0),
-"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 0.385492, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0, 0.5)
-}
-tracks/3/type = "bezier"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath(".:color:a")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"handle_modes": PackedInt32Array(0, 0),
-"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0, 0.5)
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_xar4i"]
-_data = {
-"Fade": SubResource("Animation_il0m8")
-}
-
 [node name="Game" type="Node2D"]
 position = Vector2(-10, -9)
 script = ExtResource("3")
@@ -635,52 +577,118 @@ shape = SubResource("1")
 debug_color = Color(0, 0.6, 0.701961, 0.109804)
 
 [node name="UpL" type="RayCast2D" parent="Player"]
+visible = false
 position = Vector2(-15, -14)
 target_position = Vector2(0, 0)
 collision_mask = 2
 hit_from_inside = true
 
 [node name="UpR" type="RayCast2D" parent="Player"]
+visible = false
 position = Vector2(15, -14)
 target_position = Vector2(0, 0)
 collision_mask = 2
 hit_from_inside = true
 
 [node name="DownL" type="RayCast2D" parent="Player"]
+visible = false
 position = Vector2(-15, 14)
 target_position = Vector2(0, 0)
-collision_mask = 34
+collision_mask = 2
 hit_from_inside = true
 
 [node name="DownR" type="RayCast2D" parent="Player"]
+visible = false
 position = Vector2(15, 14)
 target_position = Vector2(0, 0)
-collision_mask = 34
+collision_mask = 2
 hit_from_inside = true
 
 [node name="LeftU" type="RayCast2D" parent="Player"]
+visible = false
 position = Vector2(-15, -14)
 target_position = Vector2(0, 0)
 collision_mask = 2
 hit_from_inside = true
 
 [node name="LeftD" type="RayCast2D" parent="Player"]
+visible = false
 position = Vector2(-15, 14)
 target_position = Vector2(0, 0)
 collision_mask = 2
 hit_from_inside = true
 
 [node name="RightU" type="RayCast2D" parent="Player"]
+visible = false
 position = Vector2(15, -14)
 target_position = Vector2(0, 0)
 collision_mask = 2
 hit_from_inside = true
 
 [node name="RightD" type="RayCast2D" parent="Player"]
+visible = false
 position = Vector2(32, 32)
 target_position = Vector2(0, 0)
 collision_mask = 2
 hit_from_inside = true
+
+[node name="SlowmoCasts" type="Node2D" parent="Player"]
+
+[node name="UpL" type="RayCast2D" parent="Player/SlowmoCasts"]
+position = Vector2(-15, -14)
+target_position = Vector2(0, 0)
+collision_mask = 64
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="UpR" type="RayCast2D" parent="Player/SlowmoCasts"]
+position = Vector2(15, -14)
+target_position = Vector2(0, 0)
+collision_mask = 64
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="DownL" type="RayCast2D" parent="Player/SlowmoCasts"]
+position = Vector2(-15, 14)
+target_position = Vector2(0, 0)
+collision_mask = 64
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="DownR" type="RayCast2D" parent="Player/SlowmoCasts"]
+position = Vector2(15, 14)
+target_position = Vector2(0, 0)
+collision_mask = 64
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="LeftU" type="RayCast2D" parent="Player/SlowmoCasts"]
+position = Vector2(-15, -14)
+target_position = Vector2(0, 0)
+collision_mask = 64
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="LeftD" type="RayCast2D" parent="Player/SlowmoCasts"]
+position = Vector2(-15, 14)
+target_position = Vector2(0, 0)
+collision_mask = 64
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="RightU" type="RayCast2D" parent="Player/SlowmoCasts"]
+position = Vector2(15, -14)
+target_position = Vector2(0, 0)
+collision_mask = 64
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="RightD" type="RayCast2D" parent="Player/SlowmoCasts"]
+position = Vector2(32, 32)
+target_position = Vector2(0, 0)
+collision_mask = 64
+collide_with_areas = true
+collide_with_bodies = false
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(-173, 7)
@@ -706,12 +714,6 @@ hit_from_inside = true
 
 [node name="Trajecto" type="Node2D" parent="Player"]
 
-[node name="PointLight2D" type="PointLight2D" parent="Player"]
-scale = Vector2(0.466667, 0.458333)
-color = Color(1, 0.243137, 0.243137, 1)
-texture = ExtResource("9_0ti4h")
-texture_scale = 0.7
-
 [node name="Terrain" type="Node2D" parent="."]
 
 [node name="Floor" type="Node2D" parent="Terrain"]
@@ -723,7 +725,7 @@ script = ExtResource("4")
 position = Vector2(10, 9)
 tile_set = SubResource("TileSet_aa6sn")
 format = 2
-layer_0/tile_data = PackedInt32Array(2752512, 65539, 9, 2883584, 65539, 9, 3014656, 65539, 9, 3145728, 65539, 9, 3276800, 65539, 9, 3407872, 65539, 9, 3538944, 65539, 9, 3670016, 65539, 9, 3801088, 65539, 9, 2752514, 65539, 9, 2883586, 65539, 9, 3014658, 65539, 9, 3145730, 65539, 9, 3276802, 65539, 9, 3407874, 65539, 9, 3538946, 65539, 9, 3670018, 65539, 9, 3801090, 65539, 9, 2752542, 65539, 9, 2883614, 65539, 9, 3014686, 65539, 9, 3145758, 65539, 9, 3276830, 65539, 9, 3407902, 65539, 9, 3538974, 65539, 9, 3670046, 65539, 9, 3801118, 65539, 9, 2752540, 65539, 9, 2883612, 65539, 9, 3014684, 65539, 9, 3145756, 65539, 9, 3276828, 65539, 9, 3407900, 65539, 9, 3538972, 65539, 9, 3670044, 65539, 9, 3801116, 65539, 9, 3670020, 262147, 8, 3670022, 393219, 8, 3670024, 393219, 8, 3670026, 393219, 8, 3670028, 393219, 8, 3670030, 393219, 8, 3670032, 393219, 8, 3670034, 393219, 8, 3670036, 393219, 8, 3670038, 393219, 8, 3670040, 393219, 8, 3670042, 393219, 8, 3801094, 393219, 10, 3801096, 393219, 10, 3801098, 393219, 10, 3801100, 393219, 10, 3801102, 393219, 10, 3801104, 393219, 10, 3801106, 393219, 10, 3801108, 393219, 10, 3801110, 393219, 10, 3801112, 393219, 10, 3801092, 262147, 10, 3801114, 524291, 10)
+layer_0/tile_data = PackedInt32Array(2752512, 65539, 9, 2883584, 65539, 9, 3014656, 65539, 9, 3145728, 65539, 9, 3276800, 65539, 9, 3407872, 65539, 9, 3538944, 65539, 9, 3670016, 65539, 9, 3801088, 65539, 9, 2752514, 65539, 9, 2883586, 65539, 9, 3014658, 65539, 9, 3145730, 65539, 9, 3276802, 65539, 9, 3407874, 65539, 9, 3538946, 65539, 9, 3670018, 65539, 9, 3801090, 65539, 9, 2752542, 65539, 9, 2883614, 65539, 9, 3014686, 65539, 9, 3145758, 65539, 9, 3276830, 65539, 9, 3407902, 65539, 9, 3538974, 65539, 9, 3670046, 65539, 9, 3801118, 65539, 9, 2752540, 65539, 9, 2883612, 65539, 9, 3014684, 65539, 9, 3145756, 65539, 9, 3276828, 65539, 9, 3407900, 65539, 9, 3538972, 65539, 9, 3670044, 65539, 9, 3801116, 65539, 9, 3670020, 262147, 8, 3670022, 393219, 8, 3670024, 393219, 8, 3670026, 393219, 8, 3670028, 393219, 8, 3670030, 393219, 8, 3670032, 393219, 8, 3670034, 393219, 8, 3670036, 393219, 8, 3670038, 393219, 8, 3670040, 393219, 8, 3670042, 393219, 8, 3801094, 393219, 10, 3801096, 393219, 10, 3801098, 393219, 10, 3801100, 393219, 10, 3801102, 393219, 10, 3801104, 393219, 10, 3801106, 393219, 10, 3801108, 393219, 10, 3801110, 393219, 10, 3801112, 393219, 10, 3801092, 262147, 10, 3801114, 524291, 10, 3080215, 786435, 2, 3211287, 786435, 4)
 
 [node name="SubViewport" type="SubViewport" parent="."]
 transparent_bg = true
@@ -754,24 +756,12 @@ offset_right = 511.0
 offset_bottom = 293.0
 texture = SubResource("ViewportTexture_1lw4e")
 
-[node name="Football" type="Area2D" parent="."]
-position = Vector2(312, 809)
-collision_layer = 0
-script = ExtResource("14_ves4r")
+[node name="Football" parent="." instance=ExtResource("14_niw0v")]
 
-[node name="Sprite2D" type="Sprite2D" parent="Football"]
-texture = ExtResource("14_rfif8")
+[node name="Football2" parent="." instance=ExtResource("14_niw0v")]
+position = Vector2(158, 751)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Football"]
-shape = SubResource("CircleShape2D_hpi6a")
-
-[node name="CanvasModulate" type="CanvasModulate" parent="."]
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasModulate"]
-libraries = {
-"": SubResource("AnimationLibrary_xar4i")
-}
+[node name="Marker2D" type="Marker2D" parent="."]
+position = Vector2(321, 753)
 
 [connection signal="value_changed" from="CanvasLayer/HSlider" to="." method="_on_h_slider_value_changed"]
-[connection signal="body_entered" from="Football" to="Football" method="_on_body_entered"]
-[connection signal="body_exited" from="Football" to="Football" method="_on_body_exited"]

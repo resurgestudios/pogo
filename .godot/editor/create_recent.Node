@@ -1,9 +1,11 @@
+Marker2D
+Node2D
+Sprite2D
 AnimationPlayer
 PointLight2D
 CanvasModulate
 CollisionShape2D
 Area2D
-Sprite2D
 WorldEnvironment
 HSlider
 Camera2D
@@ -13,6 +15,5 @@ TextureRect
 SubViewport
 StaticBody2D
 RigidBody2D
-Marker2D
 RayCast2D
 TileMap

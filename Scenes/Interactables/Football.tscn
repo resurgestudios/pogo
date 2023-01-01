@@ -1,0 +1,39 @@
+[gd_scene load_steps=7 format=3 uid="uid://c2tumv5buirsj"]
+
+[ext_resource type="Script" path="res://Scripts/Football.gd" id="1_o8nfw"]
+[ext_resource type="Shader" path="res://Shaders/OutlineOnly.gdshader" id="2_luted"]
+[ext_resource type="Texture2D" uid="uid://dr0768tw35roh" path="res://Images/run_spritesheet.png" id="3_xw80l"]
+[ext_resource type="Texture2D" uid="uid://bywwkafp286d" path="res://Images/player.png" id="4_80jux"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_km2ee"]
+shader = ExtResource("2_luted")
+shader_parameter/color = null
+shader_parameter/width = null
+shader_parameter/pattern = null
+shader_parameter/inside = null
+shader_parameter/add_margins = null
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hpi6a"]
+radius = 50.448
+
+[node name="Football" type="Area2D"]
+position = Vector2(312, 809)
+collision_layer = 64
+script = ExtResource("1_o8nfw")
+
+[node name="Outline" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0)
+material = SubResource("ShaderMaterial_km2ee")
+position = Vector2(-7, 28)
+texture = ExtResource("3_xw80l")
+hframes = 17
+frame = 16
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("4_80jux")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_hpi6a")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

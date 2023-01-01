@@ -17,7 +17,7 @@ var grav : float = 300
 var x_air_drag : float = 0.98
 var y_air_drag : float = 0.98
 var x_ground_drag : float = 0.8
-var pogo_force_multiplier : float = 5
+var pogo_force_multiplier : float = 7
 var highest : float = 10000000
 var delta : float = 0.0
 
@@ -35,6 +35,14 @@ func reset() -> void:
 	$LeftD.position = Vector2(-player_size.x, player_size.y - 1)
 	$RightU.position = Vector2(player_size.x, -player_size.y + 1)
 	$RightD.position = Vector2(player_size.x, player_size.y - 1)
+	$SlowmoCasts/DownL.position = Vector2(-player_size.x + 1, player_size.y)
+	$SlowmoCasts/DownR.position = Vector2(player_size.x - 1, player_size.y)
+	$SlowmoCasts/UpL.position = Vector2(-player_size.x + 1, -player_size.y)
+	$SlowmoCasts/UpR.position = Vector2(player_size.x - 1, -player_size.y)
+	$SlowmoCasts/LeftU.position = Vector2(-player_size.x, -player_size.y + 1)
+	$SlowmoCasts/LeftD.position = Vector2(-player_size.x, player_size.y - 1)
+	$SlowmoCasts/RightU.position = Vector2(player_size.x, -player_size.y + 1)
+	$SlowmoCasts/RightD.position = Vector2(player_size.x, player_size.y - 1)
 
 func calibrate_casts():
 	if sign(move.y) == 1:
@@ -42,16 +50,28 @@ func calibrate_casts():
 		$DownR.target_position.y = abs(move.y + 1) * grav_dir * delta
 		$UpL.target_position.y = 0
 		$UpR.target_position.y = 0
+		$SlowmoCasts/DownL.target_position.y = abs(move.y + 1) * grav_dir * delta
+		$SlowmoCasts/DownR.target_position.y = abs(move.y + 1) * grav_dir * delta
+		$SlowmoCasts/UpL.target_position.y = 0
+		$SlowmoCasts/UpR.target_position.y = 0
 	elif sign(move.y) == -1:
 		$UpL.target_position.y = -abs(move.y -1) * grav_dir * delta
 		$UpR.target_position.y = -abs(move.y - 1) * grav_dir * delta
 		$DownL.target_position.y = 0
 		$DownR.target_position.y = 0
+		$SlowmoCasts/UpL.target_position.y = -abs(move.y -1) * grav_dir * delta
+		$SlowmoCasts/UpR.target_position.y = -abs(move.y - 1) * grav_dir * delta
+		$SlowmoCasts/DownL.target_position.y = 0
+		$SlowmoCasts/DownR.target_position.y = 0
 	else:
 		$UpL.target_position.y = 0
 		$UpR.target_position.y = 0
 		$DownL.target_position.y = 0
 		$DownR.target_position.y = 0
+		$SlowmoCasts/UpL.target_position.y = 0
+		$SlowmoCasts/UpR.target_position.y = 0
+		$SlowmoCasts/DownL.target_position.y = 0
+		$SlowmoCasts/DownR.target_position.y = 0
 	
 	$RightU.target_position.x = abs(move.x) * delta
 	$RightD.target_position.x = abs(move.x) * delta
@@ -66,8 +86,21 @@ func calibrate_casts():
 	$UpL.force_raycast_update()
 	$UpR.force_raycast_update()
 	
+	$SlowmoCasts/RightU.target_position.x = abs(move.x) * delta
+	$SlowmoCasts/RightD.target_position.x = abs(move.x) * delta
+	$SlowmoCasts/LeftU.target_position.x = -abs(move.x) * delta
+	$SlowmoCasts/LeftD.target_position.x = -abs(move.x) * delta
+	$SlowmoCasts/DownL.force_raycast_update()
+	$SlowmoCasts/DownR.force_raycast_update()
+	$SlowmoCasts/RightU.force_raycast_update()
+	$SlowmoCasts/RightD.force_raycast_update()
+	$SlowmoCasts/LeftU.force_raycast_update()
+	$SlowmoCasts/LeftD.force_raycast_update()
+	$SlowmoCasts/UpL.force_raycast_update()
+	$SlowmoCasts/UpR.force_raycast_update()
+	
 
-func _physics_process(del):
+func _physics_process(del) -> void:
 	delta = del
 	calibrate_casts()
 	#TO BE REMOVED VV
@@ -241,7 +274,7 @@ func latching() -> void:
 	
 func free_move() -> void:
 	if sign(move.x) == 1:
-		$Sprite2D.rotation = deg_to_rad(8)
+		#$Sprite2D.rotation_degrees = 8
 		if $Sprite2D.animation != "run":
 			$Sprite2D.frame = 0
 			$Sprite2D.play("run")
@@ -249,7 +282,7 @@ func free_move() -> void:
 		right_collision()
 
 	elif sign(move.x) == -1:
-		$Sprite2D.rotation = deg_to_rad(-8)
+		#$Sprite2D.rotation_degrees = -8
 		if $Sprite2D.animation != "run":
 			$Sprite2D.frame = 0
 			$Sprite2D.play("run")
@@ -263,10 +296,12 @@ func free_move() -> void:
 
 func flying() -> void:
 	if focus.size() > 0:
+		focus[0].get_node("Outline").global_position = focus[0].global_position + (focus[0].global_position - get_global_mouse_position()).normalized() * -30
 		if Input.is_action_just_pressed("mb_left"):
 			global_position = focus[0].global_position + (focus[0].global_position - get_global_mouse_position()).normalized() * -30
 			move = (focus[0].global_position - get_global_mouse_position()).normalized() * -600.0
 			focus[0].move = (focus[0].global_position - get_global_mouse_position()).normalized() * 600.0
+			focus[0].get_node("Outline").modulate.a = 0
 			focus.remove_at(0)
 			focus_updated()
 			
@@ -276,7 +311,13 @@ func flying() -> void:
 	#DADAD
 	#move.y *= y_air_drag
 	if sign(move.y) == -1:
-		if $UpL.get_collision_point().y - $UpL.global_position.y > move.y * delta && $UpL.is_colliding():
+		if $SlowmoCasts/UpR.get_collision_point().y - $SlowmoCasts/UpR.global_position.y > move.y * delta && $SlowmoCasts/UpR.is_colliding():
+			global_position.y += $SlowmoCasts/UpR.get_collision_point().y - $SlowmoCasts/UpR.global_position.y
+#			global_position.y += move.y * delta
+		elif $SlowmoCasts/UpL.get_collision_point().y - $SlowmoCasts/UpL.global_position.y > move.y * delta && $SlowmoCasts/UpL.is_colliding():
+			global_position.y += $SlowmoCasts/UpL.get_collision_point().y - $SlowmoCasts/UpL.global_position.y
+#			global_position.y += move.y * delta
+		elif $UpL.get_collision_point().y - $UpL.global_position.y > move.y * delta && $UpL.is_colliding():
 			global_position.y += $UpL.get_collision_point().y - $UpL.global_position.y
 			obj_check("UpL")
 			pogocr("up")
@@ -284,11 +325,38 @@ func flying() -> void:
 			global_position.y += $UpR.get_collision_point().y - $UpR.global_position.y
 			obj_check("UpR")
 			pogocr("up")
+		
 		else:
 			global_position.y += move.y * delta
+#	elif sign(move.y) == 1:
+#		if abs($SlowmoCasts/DownR.get_collision_point().y - $SlowmoCasts/DownR.global_position.y) < abs(move.y * delta) && $SlowmoCasts/DownR.is_colliding():
+#			print($SlowmoCasts/DownR.get_collision_point())
+#			global_position.y += $SlowmoCasts/DownR.get_collision_point().y - $SlowmoCasts/DownR.global_position.y
+#			#global_position.y += move.y * delta
+#		elif abs($SlowmoCasts/DownL.get_collision_point().y - $SlowmoCasts/DownL.global_position.y) < abs(move.y * delta) && $SlowmoCasts/DownL.is_colliding():
+#			global_position.y += $SlowmoCasts/DownL.get_collision_point().y - $SlowmoCasts/DownL.global_position.y
+#			#global_position.y += move.y * delta
+#		elif $DownL.get_collision_point().y - $DownL.global_position.y > move.y * delta && $DownL.is_colliding():
+#			global_position.y += $DownL.get_collision_point().y - $DownL.global_position.y
+#			obj_check("UpL")
+#			state = "free_move"
+#		elif $DownR.get_collision_point().y - $DownR.global_position.y > move.y * delta && $DownR.is_colliding():
+#			global_position.y += $DownR.get_collision_point().y - $UpR.global_position.y
+#			obj_check("UpR")
+#			state = "free_move"
+#		else:
+#			global_position.y += move.y * delta
+			
+			
 	
 	if sign(move.x) == 1:
-		if abs($RightU.get_collision_point().x - ($RightU.global_position.x)) < move.x * delta && $RightU.is_colliding():
+		if abs($SlowmoCasts/RightU.get_collision_point().x - ($SlowmoCasts/RightU.global_position.x)) < move.x * delta && $SlowmoCasts/RightU.is_colliding():
+			global_position.x += $SlowmoCasts/RightU.get_collision_point().x - $SlowmoCasts/RightU.global_position.x
+			#global_position.x += move.x * delta
+		elif abs($SlowmoCasts/RightD.get_collision_point().x - $SlowmoCasts/RightD.global_position.x) < move.x * delta && $SlowmoCasts/RightD.is_colliding():
+			global_position.x += $SlowmoCasts/RightD.get_collision_point().x - $SlowmoCasts/RightD.global_position.x
+			#global_position.x += move.x * delta
+		elif abs($RightU.get_collision_point().x - ($RightU.global_position.x)) < move.x * delta && $RightU.is_colliding():
 			global_position.x += $RightU.get_collision_point().x - $RightU.global_position.x
 			obj_check("RightU")
 			pogocr("right")
@@ -298,10 +366,15 @@ func flying() -> void:
 			pogocr("right")
 		else:
 			global_position.x += move.x * delta
-#			if $Sprite2D.animation != "fall":
 	
 	elif sign(move.x) == -1:
-		if abs($LeftU.get_collision_point().x - $LeftU.global_position.x) < abs(move.x * delta) && $LeftU.is_colliding():
+		if abs($SlowmoCasts/LeftU.get_collision_point().x - ($SlowmoCasts/LeftU.global_position.x)) < move.x * delta && $SlowmoCasts/LeftU.is_colliding():
+			global_position.x += $SlowmoCasts/LeftU.get_collision_point().x - $SlowmoCasts/LeftU.global_position.x
+#			global_position.x += move.x * delta
+		elif abs($SlowmoCasts/LeftD.get_collision_point().x - $SlowmoCasts/LeftD.global_position.x) < move.x * delta && $SlowmoCasts/LeftD.is_colliding():
+			global_position.x += $SlowmoCasts/LeftD.get_collision_point().x - $SlowmoCasts/LeftD.global_position.x
+#			global_position.x += move.x * delta
+		elif abs($LeftU.get_collision_point().x - $LeftU.global_position.x) < abs(move.x * delta) && $LeftU.is_colliding():
 			global_position.x += $LeftU.get_collision_point().x - $LeftU.global_position.x
 			obj_check("LeftU")
 			pogocr("left")
@@ -309,16 +382,17 @@ func flying() -> void:
 			global_position.x += $LeftD.get_collision_point().x - $LeftD.global_position.x
 			obj_check("LeftD")
 			pogocr("left")
-			
+		
 		else:
 			global_position.x += move.x * delta
-#				if $Sprite2D.animation != "fall":
-#					$Sprite2D.play("fall")
+
 	
-	if sign(move.y) == 1:
-		if $DownL.is_colliding() || $DownR.is_colliding():
-			move = Vector2.ZERO
-			state = "free_move"
+#	if sign(move.y) == 1:
+#		if $DownL.is_colliding() && !$DownL.get_collider().has_method("is_slowmo_area") || $DownR.is_colliding() && !$DownR.get_collider().has_method("is_slowmo_area"):
+#			move = Vector2.ZERO
+#			state = "free_move"
+			
+
 
 func on_floor() -> bool:
 	if $DownL.is_colliding():
@@ -377,7 +451,9 @@ func pogo_input() -> void:
 	
 	if Input.is_action_just_pressed("down"):
 		if state == "flying":
-			Global.freeze(0.05, 0.5, func(): move = Vector2(0, 2000))
+			move = Vector2(0, 2000)
+			calibrate_casts()
+			#Global.freeze(0.05, 0.5, func(): move = Vector2(0, 2000))
 #			$DownL.target_position = Vector2(0, 5000)
 #			$DownR.target_position = Vector2(0, 5000)
 #			$DownL.force_raycast_update()
@@ -433,15 +509,28 @@ func pogocr(type : String) -> void:
 #		var new_y = s.y / 2 - (288.0 * (s.x / 512.0)) / 2 + gc.y * (s.x / 512.0)
 #		Input.warp_mouse(Vector2(new_x, new_y))
 
+var focus_tween : Tween
+
 func focus_updated() -> void:
 	if focus.size() == 1:
 		if Engine.time_scale != 0.2:
-			Global.Root.get_node("CanvasModulate/AnimationPlayer").playback_speed = 5.0
-			Global.Root.get_node("CanvasModulate/AnimationPlayer").play("Fade")
+			if focus_tween == null:
+				focus_tween = create_tween()
+			else:
+				focus_tween.stop()
+			focus_tween.set_ease(Tween.EASE_IN_OUT)
+			focus_tween.tween_property(Global.Root.get_node("Terrain"), "modulate", Color(0.385, 0.385, 0.385), 0.1)
 			#create_tween().set_ease(Tween.EASE_OUT).tween_property(Engine, "time_scale", 0.05 , 0.4)
-			Engine.time_scale = 0.2
+			Engine.time_scale = 0.5 * (40 / sqrt(move.x**2 + move.y**2))
+			
+			
 	elif focus.size() == 0:
-		Global.Root.get_node("CanvasModulate/AnimationPlayer").playback_speed = 5.0
-		Global.Root.get_node("CanvasModulate/AnimationPlayer").play_backwards("Fade")
+		if focus_tween == null:
+			focus_tween = create_tween()
+		else:
+			focus_tween.stop()
+			focus_tween = create_tween()
+		focus_tween.set_ease(Tween.EASE_IN_OUT)
+		focus_tween.tween_property(Global.Root.get_node("Terrain"), "modulate", Color(1, 1, 1), 0.1)
 		#create_tween().tween_property(Engine, "time_scale", 1.0 , 0.2)
 		Engine.time_scale = 1
