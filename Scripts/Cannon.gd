@@ -1,6 +1,6 @@
 extends Area2D
 
-@export var strength : float = 1
+@export var strength : float = 40
 
 # Declare member variables here. Examples:
 # var a = 2

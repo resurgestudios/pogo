@@ -101,7 +101,7 @@ func calibrate_casts():
 	
 
 func _physics_process(del) -> void:
-	delta = del
+	delta = del if !Global.paused else 0
 	calibrate_casts()
 	#TO BE REMOVED VV
 	if Input.is_action_just_pressed("esc"):
@@ -124,15 +124,17 @@ func _physics_process(del) -> void:
 	if on_floor() && state == "free_move":
 		move.y = 0
 	
-	if state in ["free_move", "flying"]:
+	if state in ["free_move"]:
 		move.y += grav * grav_dir * delta
 #		$Sprite2D.play("fall")
 		down_collision()
+	
 
 	if state == "free_move":
 		free_move()
 
 	if state == "flying":
+		move.y += grav * grav_dir * delta
 		flying()
 
 	if state != "latching":
@@ -298,12 +300,26 @@ func flying() -> void:
 	if focus.size() > 0:
 		focus[0].get_node("Outline").global_position = focus[0].global_position + (focus[0].global_position - get_global_mouse_position()).normalized() * -30
 		if Input.is_action_just_pressed("mb_left"):
-			global_position = focus[0].global_position + (focus[0].global_position - get_global_mouse_position()).normalized() * -30
-			move = (focus[0].global_position - get_global_mouse_position()).normalized() * -600.0
-			focus[0].move = (focus[0].global_position - get_global_mouse_position()).normalized() * 600.0
-			focus[0].get_node("Outline").modulate.a = 0
-			focus.remove_at(0)
-			focus_updated()
+			Global.paused = true
+			var mpos : Vector2 = get_global_mouse_position()
+			var tween : Tween = create_tween()
+			tween.set_trans(Tween.TRANS_BOUNCE)
+			tween.set_ease(Tween.EASE_IN_OUT)
+			tween.tween_property($Sprite2D, "scale:y", 0, 0.1 * Engine.time_scale)
+			tween.tween_property($Sprite2D, "scale:y", 0, 0.1 * Engine.time_scale)
+			tween.tween_callback(func() : global_position = focus[0].global_position + (focus[0].global_position - mpos).normalized() * -30)
+			tween.tween_property($Sprite2D, "scale:y", 1, 0.1 * Engine.time_scale)
+			tween.tween_property($Sprite2D, "scale:y", 1, 0.05 * Engine.time_scale)
+		
+			tween.tween_callback(
+			func():
+				Global.paused = false
+				move = (focus[0].global_position - mpos).normalized() * -600.0
+				focus[0].move = (focus[0].global_position - mpos).normalized() * 600.0
+				focus[0].get_node("Outline").modulate.a = 0
+				focus.remove_at(0)
+				focus_updated()
+			)
 			
 			
 	if $Sprite2D.animation != "spinny":
@@ -311,80 +327,102 @@ func flying() -> void:
 	#DADAD
 	#move.y *= y_air_drag
 	if sign(move.y) == -1:
+		var done : bool = false
 		if $SlowmoCasts/UpR.get_collision_point().y - $SlowmoCasts/UpR.global_position.y > move.y * delta && $SlowmoCasts/UpR.is_colliding():
+			if round($SlowmoCasts/UpR.get_collision_point().y) != round($SlowmoCasts/UpR.global_position.y):
+				done = true
 			global_position.y += $SlowmoCasts/UpR.get_collision_point().y - $SlowmoCasts/UpR.global_position.y
 #			global_position.y += move.y * delta
 		elif $SlowmoCasts/UpL.get_collision_point().y - $SlowmoCasts/UpL.global_position.y > move.y * delta && $SlowmoCasts/UpL.is_colliding():
+			if round($SlowmoCasts/UpL.get_collision_point().y) != round($SlowmoCasts/UpL.global_position.y):
+				done = true
 			global_position.y += $SlowmoCasts/UpL.get_collision_point().y - $SlowmoCasts/UpL.global_position.y
 #			global_position.y += move.y * delta
-		elif $UpL.get_collision_point().y - $UpL.global_position.y > move.y * delta && $UpL.is_colliding():
-			global_position.y += $UpL.get_collision_point().y - $UpL.global_position.y
-			obj_check("UpL")
-			pogocr("up")
-		elif $UpR.get_collision_point().y - $UpR.global_position.y > move.y * delta && $UpR.is_colliding():
-			global_position.y += $UpR.get_collision_point().y - $UpR.global_position.y
-			obj_check("UpR")
-			pogocr("up")
 		
-		else:
-			global_position.y += move.y * delta
-#	elif sign(move.y) == 1:
-#		if abs($SlowmoCasts/DownR.get_collision_point().y - $SlowmoCasts/DownR.global_position.y) < abs(move.y * delta) && $SlowmoCasts/DownR.is_colliding():
-#			print($SlowmoCasts/DownR.get_collision_point())
-#			global_position.y += $SlowmoCasts/DownR.get_collision_point().y - $SlowmoCasts/DownR.global_position.y
-#			#global_position.y += move.y * delta
-#		elif abs($SlowmoCasts/DownL.get_collision_point().y - $SlowmoCasts/DownL.global_position.y) < abs(move.y * delta) && $SlowmoCasts/DownL.is_colliding():
-#			global_position.y += $SlowmoCasts/DownL.get_collision_point().y - $SlowmoCasts/DownL.global_position.y
-#			#global_position.y += move.y * delta
-#		elif $DownL.get_collision_point().y - $DownL.global_position.y > move.y * delta && $DownL.is_colliding():
-#			global_position.y += $DownL.get_collision_point().y - $DownL.global_position.y
-#			obj_check("UpL")
-#			state = "free_move"
-#		elif $DownR.get_collision_point().y - $DownR.global_position.y > move.y * delta && $DownR.is_colliding():
-#			global_position.y += $DownR.get_collision_point().y - $UpR.global_position.y
-#			obj_check("UpR")
-#			state = "free_move"
-#		else:
-#			global_position.y += move.y * delta
+		if !done:
+			if $UpL.get_collision_point().y - $UpL.global_position.y > move.y * delta && $UpL.is_colliding():
+				global_position.y += $UpL.get_collision_point().y - $UpL.global_position.y
+				obj_check("UpL")
+				pogocr("up")
+			elif $UpR.get_collision_point().y - $UpR.global_position.y > move.y * delta && $UpR.is_colliding():
+				global_position.y += $UpR.get_collision_point().y - $UpR.global_position.y
+				obj_check("UpR")
+				pogocr("up")
+			
+			else:
+				global_position.y += move.y * delta
+			
+	elif sign(move.y) == 1:
+		var done : bool = false
+		if abs($SlowmoCasts/DownR.get_collision_point().y - $SlowmoCasts/DownR.global_position.y) < abs(move.y * delta) && $SlowmoCasts/DownR.is_colliding():
+			if round($SlowmoCasts/DownR.get_collision_point().y) != round($SlowmoCasts/DownR.global_position.y):
+				done = true 
+			global_position.y += $SlowmoCasts/DownR.get_collision_point().y - $SlowmoCasts/DownR.global_position.y
+			done = true
+		elif abs($SlowmoCasts/DownL.get_collision_point().y - $SlowmoCasts/DownL.global_position.y) < abs(move.y * delta) && $SlowmoCasts/DownL.is_colliding():
+			if round($SlowmoCasts/DownL.get_collision_point().y) != round($SlowmoCasts/DownL.global_position.y):
+				done = true 
+			global_position.y += $SlowmoCasts/DownL.get_collision_point().y - $SlowmoCasts/DownL.global_position.y
+			#global_position.y += move.y * delta
+
+		if !done:
+			if abs($DownL.get_collision_point().y - $DownL.global_position.y) < abs(move.y * delta) && $DownL.is_colliding():
+				global_position.y += $DownL.get_collision_point().y - $DownL.global_position.y
+				state = "free_move"
+			elif abs($DownR.get_collision_point().y - $DownR.global_position.y) < abs(move.y * delta) && $DownR.is_colliding():
+				global_position.y += $DownR.get_collision_point().y - $DownR.global_position.y
+				state = "free_move"
+			else:
+				global_position.y += move.y * delta
 			
 			
 	
 	if sign(move.x) == 1:
+		var done : bool = false
 		if abs($SlowmoCasts/RightU.get_collision_point().x - ($SlowmoCasts/RightU.global_position.x)) < move.x * delta && $SlowmoCasts/RightU.is_colliding():
+			if  round($SlowmoCasts/RightU.get_collision_point().x) != round($SlowmoCasts/RightU.global_position.x):
+				done = true
 			global_position.x += $SlowmoCasts/RightU.get_collision_point().x - $SlowmoCasts/RightU.global_position.x
-			#global_position.x += move.x * delta
 		elif abs($SlowmoCasts/RightD.get_collision_point().x - $SlowmoCasts/RightD.global_position.x) < move.x * delta && $SlowmoCasts/RightD.is_colliding():
+			if  round($SlowmoCasts/RightD.get_collision_point().x) != round($SlowmoCasts/RightD.global_position.x):
+				done = true
 			global_position.x += $SlowmoCasts/RightD.get_collision_point().x - $SlowmoCasts/RightD.global_position.x
-			#global_position.x += move.x * delta
-		elif abs($RightU.get_collision_point().x - ($RightU.global_position.x)) < move.x * delta && $RightU.is_colliding():
-			global_position.x += $RightU.get_collision_point().x - $RightU.global_position.x
-			obj_check("RightU")
-			pogocr("right")
-		elif abs($RightD.get_collision_point().x - $RightD.global_position.x) < move.x * delta && $RightD.is_colliding():
-			global_position.x += $RightD.get_collision_point().x - $RightD.global_position.x
-			obj_check("RightD")
-			pogocr("right")
-		else:
-			global_position.x += move.x * delta
+			
+		if !done:
+			if abs($RightU.get_collision_point().x - ($RightU.global_position.x)) < move.x * delta && $RightU.is_colliding():
+				global_position.x += $RightU.get_collision_point().x - $RightU.global_position.x
+				obj_check("RightU")
+				pogocr("right")
+			elif abs($RightD.get_collision_point().x - $RightD.global_position.x) < move.x * delta && $RightD.is_colliding():
+				global_position.x += $RightD.get_collision_point().x - $RightD.global_position.x
+				obj_check("RightD")
+				pogocr("right")
+			else:
+				global_position.x += move.x * delta
 	
 	elif sign(move.x) == -1:
+		var done : bool = false
 		if abs($SlowmoCasts/LeftU.get_collision_point().x - ($SlowmoCasts/LeftU.global_position.x)) < move.x * delta && $SlowmoCasts/LeftU.is_colliding():
+			if round($SlowmoCasts/LeftU.get_collision_point().x) != round($SlowmoCasts/LeftU.global_position.x):
+				done = true
 			global_position.x += $SlowmoCasts/LeftU.get_collision_point().x - $SlowmoCasts/LeftU.global_position.x
-#			global_position.x += move.x * delta
 		elif abs($SlowmoCasts/LeftD.get_collision_point().x - $SlowmoCasts/LeftD.global_position.x) < move.x * delta && $SlowmoCasts/LeftD.is_colliding():
+			if round($SlowmoCasts/LeftD.get_collision_point().x) != round($SlowmoCasts/LeftD.global_position.x):
+				done = true
 			global_position.x += $SlowmoCasts/LeftD.get_collision_point().x - $SlowmoCasts/LeftD.global_position.x
-#			global_position.x += move.x * delta
-		elif abs($LeftU.get_collision_point().x - $LeftU.global_position.x) < abs(move.x * delta) && $LeftU.is_colliding():
-			global_position.x += $LeftU.get_collision_point().x - $LeftU.global_position.x
-			obj_check("LeftU")
-			pogocr("left")
-		elif abs($LeftD.get_collision_point().x - $LeftD.global_position.x) < abs(move.x * delta) && $LeftD.is_colliding():
-			global_position.x += $LeftD.get_collision_point().x - $LeftD.global_position.x
-			obj_check("LeftD")
-			pogocr("left")
 		
-		else:
-			global_position.x += move.x * delta
+		if !done:
+			if abs($LeftU.get_collision_point().x - $LeftU.global_position.x) < abs(move.x * delta) && $LeftU.is_colliding():
+				global_position.x += $LeftU.get_collision_point().x - $LeftU.global_position.x
+				obj_check("LeftU")
+				pogocr("left")
+			elif abs($LeftD.get_collision_point().x - $LeftD.global_position.x) < abs(move.x * delta) && $LeftD.is_colliding():
+				global_position.x += $LeftD.get_collision_point().x - $LeftD.global_position.x
+				obj_check("LeftD")
+				pogocr("left")
+			
+			else:
+				global_position.x += move.x * delta
 
 	
 #	if sign(move.y) == 1:
@@ -519,9 +557,9 @@ func focus_updated() -> void:
 			else:
 				focus_tween.stop()
 			focus_tween.set_ease(Tween.EASE_IN_OUT)
-			focus_tween.tween_property(Global.Root.get_node("Terrain"), "modulate", Color(0.385, 0.385, 0.385), 0.1)
-			#create_tween().set_ease(Tween.EASE_OUT).tween_property(Engine, "time_scale", 0.05 , 0.4)
 			Engine.time_scale = 0.5 * (40 / sqrt(move.x**2 + move.y**2))
+			focus_tween.tween_property(Global.Root.get_node("Terrain"), "modulate", Color(0.385, 0.385, 0.385), 0.1 * Engine.time_scale)
+			#create_tween().set_ease(Tween.EASE_OUT).tween_property(Engine, "time_scale", 0.05 , 0.4)
 			
 			
 	elif focus.size() == 0:
@@ -531,6 +569,6 @@ func focus_updated() -> void:
 			focus_tween.stop()
 			focus_tween = create_tween()
 		focus_tween.set_ease(Tween.EASE_IN_OUT)
-		focus_tween.tween_property(Global.Root.get_node("Terrain"), "modulate", Color(1, 1, 1), 0.1)
+		focus_tween.tween_property(Global.Root.get_node("Terrain"), "modulate", Color(1, 1, 1), 0.1 * Engine.time_scale)
 		#create_tween().tween_property(Engine, "time_scale", 1.0 , 0.2)
 		Engine.time_scale = 1

@@ -10,7 +10,8 @@ func is_slowmo_area():
 	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta) -> void:
+func _process(del) -> void:
+	var delta : float = del if !Global.paused else 0
 	global_position += move * delta
 	
 

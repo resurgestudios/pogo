@@ -1,9 +1,10 @@
 extends Node
 
-var Root
-var Player
-var Camera
+var Root : Node2D
+var Player : Node2D
+var Camera : Node2D
 var gspeed : float = 1.0 : set = set_gspeed
+var paused : bool = false
 
 func _ready() -> void:
 	gspeed = gspeed
