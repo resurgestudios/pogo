@@ -106,6 +106,9 @@ func _physics_process(del) -> void:
 	#TO BE REMOVED VV
 	if Input.is_action_just_pressed("esc"):
 		get_tree().paused = true
+	
+	Global.Root.get_node("BG/Movie/2").global_position.x = lerp(Global.Root.get_node("BG/Movie/2").global_position.x, 256 + -(global_position.x - 256) * 0.1, 0.1)
+	Global.Root.get_node("BG/Movie/3").global_position.x = lerp(Global.Root.get_node("BG/Movie/3").global_position.x, 256 + -(global_position.x - 256) * 0.25, 0.1)
 	Global.Root.get_node("CanvasLayer/StateLabel").text = state
 
 	pogo_input()

@@ -16,7 +16,7 @@ func _process(del) -> void:
 	
 
 func _on_body_entered(body) -> void:
-	if body == Global.Player:
+	if body == Global.Player && body.state == "flying":
 		show_outline()
 		body.focus.append(self)
 		body.focus_updated()

@@ -1,7 +1,9 @@
-Marker2D
 Node2D
-Sprite2D
 AnimationPlayer
+Node
+CanvasLayer
+Marker2D
+Sprite2D
 PointLight2D
 CanvasModulate
 CollisionShape2D
@@ -9,7 +11,6 @@ Area2D
 WorldEnvironment
 HSlider
 Camera2D
-CanvasLayer
 VehicleWheel3D
 TextureRect
 SubViewport

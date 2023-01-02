@@ -2,7 +2,6 @@ res://Scenes/Game.tscn
 res://Scripts/Player.gd
 res://Shaders/OutlineOnly.gdshader
 res://Scenes/Interactables/Football.tscn
-res://Scripts/Global.gd
-res://Scripts/Football.gd
 res://Scenes/Interactables/Cannon.tscn
-res://Scripts/Cannon.gd
+res://Scripts/Spikey.gd
+res://Scripts/Game.gd
