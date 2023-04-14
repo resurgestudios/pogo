@@ -11,6 +11,7 @@ var max_force : float = 1.0
 var player_size : Vector2 = Vector2(10, 12)
 var can_pogor : bool = true
 var focus : Array[Node] = []
+var start_move_y : float = 0
 
 var speed : float = 120
 var grav : float = 300
@@ -107,8 +108,9 @@ func _physics_process(del) -> void:
 	if Input.is_action_just_pressed("esc"):
 		get_tree().paused = true
 	
-	Global.Root.get_node("BG/Movie/2").global_position.x = lerp(Global.Root.get_node("BG/Movie/2").global_position.x, 256 + -(global_position.x - 256) * 0.1, 0.1)
-	Global.Root.get_node("BG/Movie/3").global_position.x = lerp(Global.Root.get_node("BG/Movie/3").global_position.x, 256 + -(global_position.x - 256) * 0.25, 0.1)
+	print(delta)
+	Global.Root.get_node("BG/Movie/2").global_position.x = lerp(Global.Root.get_node("BG/Movie/2").global_position.x, 256 + -(global_position.x - 256) * 0.1, 0.1 * delta / 0.01666666666667)
+	Global.Root.get_node("BG/Movie/3").global_position.x = lerp(Global.Root.get_node("BG/Movie/3").global_position.x, 256 + -(global_position.x - 256) * 0.25, 0.1 * delta / 0.01666666666667)
 	Global.Root.get_node("CanvasLayer/StateLabel").text = state
 
 	pogo_input()
@@ -145,6 +147,8 @@ func _physics_process(del) -> void:
 	
 	if state == "latching":
 		latching()
+	
+	
 
 func power_charge() -> void:
 	holding_l_force = min(global_position.distance_to(get_global_mouse_position()) / 100, max_force)
@@ -324,9 +328,28 @@ func flying() -> void:
 				focus_updated()
 			)
 			
-			
-	if $Sprite2D.animation != "spinny":
-		$Sprite2D.play("spinny")
+	if $Sprite2D.is_playing():
+		$Sprite2D.stop()
+	if $Sprite2D.animation != "jump":
+		$Sprite2D.animation = "jump"
+		$Sprite2D.frame = 0
+		
+#	if move.y < start_move_y / 2:
+#		$Sprite2D.frame = 0
+#		print(1)
+#	elif move.y > start_move_y / 2 && move.y < 0:
+#		$Sprite2D.frame = 1
+#		print(2)
+#	elif move.y > 0 && move.y < abs(start_move_y) / 2:
+#		$Sprite2D.frame = 2
+#		print(3)
+#	elif move.y > abs(start_move_y) / 2:
+#		$Sprite2D.frame = 3
+#		print(4)
+		
+	
+#	if $Sprite2D.animation != "spinny":
+#		$Sprite2D.play("spinny")
 	#DADAD
 	#move.y *= y_air_drag
 	if sign(move.y) == -1:
@@ -516,6 +539,7 @@ func pogol() -> void:
 		can_pogor = false
 		state = "flying"
 		move = (global_position - get_global_mouse_position()).normalized() * Vector2(holding_l_force * 50, holding_l_force * 40) * pogo_force_multiplier
+		start_move_y = move.y
 		calibrate_casts()
 		flying()
 		#global_position += move

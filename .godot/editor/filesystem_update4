@@ -3,5 +3,3 @@ res://Scripts/Player.gd
 res://Shaders/OutlineOnly.gdshader
 res://Scenes/Interactables/Football.tscn
 res://Scenes/Interactables/Cannon.tscn
-res://Scripts/Spikey.gd
-res://Scripts/Game.gd
